@@ -1,0 +1,128 @@
+name: lasic_grana_flutter
+description: A new Flutter project.
+
+publish_to: 'none' 
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.1 <3.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity_plus: ^2.3.0
+  shared_preferences: ^2.1.0
+  cupertino_icons: ^1.0.5
+  is_first_run: ^1.0.0
+
+  #Firebase
+  firebase_core: ^2.10.0
+  cloud_firestore: ^4.5.2
+  firebase_auth: ^4.4.2
+  firebase_storage: ^11.1.1
+  firebase_remote_config: ^4.0.1
+  
+  
+  flutter_modular: ^5.0.3
+  bloc: ^8.1.1
+  flutter_bloc: ^8.1.2
+
+  #
+  google_sign_in: ^6.1.0
+
+
+  hive: ^2.2.3
+  path_provider: ^2.0.11
+  internet_connection_checker: ^1.0.0+1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  build_runner: ^2.3.3
+  flutter_native_splash: ^2.2.19
+  
+  flutter_lints: ^2.0.1
+
+flutter_native_splash:
+  background_image: "assets/images/logo-background.png"
+  fullscreen: true
+  android: true
+  ios: true
+  android_screen_orientation: portrait
+
+
+flutter:
+
+  
+  uses-material-design: true
+
+  
+  assets:
+    - assets/images/button-about.png
+    - assets/images/background-award.png
+    - assets/images/button-return-pressed.png
+    - assets/images/button-return.png
+    - assets/images/blue-button-background.png
+    - assets/images/white-box-background.png
+    - assets/images/boy-avatar.png
+    - assets/images/button-close-pressed.png
+    - assets/images/button-close.png
+    - assets/images/button-store.png
+    - assets/images/yellow-button-background.png
+    - assets/images/product-smartphone.png
+    - assets/images/cloud.png
+    - assets/images/decorative-coin.png
+    - assets/images/decorative-coin1.png
+    - assets/images/decorative-coin2.png
+    - assets/images/decorative-coin3.png
+    - assets/images/decorative-coins.png
+    - assets/images/button-continue.png
+    - assets/images/help-button-delete-locked.png
+    - assets/images/help-button-delete.png
+    - assets/images/chest-path-background.png
+    - assets/images/girl-avatar.png
+    - assets/images/green-answer-item-button.png
+    - assets/images/white-coin-box-background.png
+    - assets/images/icon-chest.png
+    - assets/images/icon-play.png
+    - assets/images/save-button.png
+    - assets/images/help-button-skip-locked.png
+    - assets/images/help-button-skip.png
+    - assets/images/left-arrow.png 
+    - assets/images/icon-chest-locked.png
+    - assets/images/logo-background.png
+    - assets/images/grana-logo.png
+    - assets/images/help-button-more-time-locked.png
+    - assets/images/help-button-more-time.png
+    - assets/images/new-game-button.png
+    - assets/images/level-stats-box-background.png
+    - assets/images/open-chest-icon.png 
+    - assets/images/about-background.png
+    - assets/images/purchase-button.png
+    - assets/images/red-answer-item-button.png
+    - assets/images/answer-button.png
+    - assets/images/right-arrow.png 
+    - assets/images/store-background.png
+    - assets/images/mini-button-store-locked.png
+    - assets/images/mini-button-store.png
+    - assets/images/product-television.png
+    - assets/images/help-button-tip-locked.png
+    - assets/images/help-button-tip.png
+    - assets/images/product-travel.png
+    - assets/images/product-video-game.png
+    - assets/images/product-notebook.png
+    - assets/images/white-answer-item-button.png
+    - assets/images/green-mountains-background.png
+    - assets/images/purchase-locked-button-empty.png
+    - assets/images/purchase-button-empty.png
+    - assets/images/white-speech-bubble.png
+    - assets/images/pig1.png
+    - assets/images/pig2.png
+    - assets/images/pig3.png
+    - assets/images/you-are-box.png
+  

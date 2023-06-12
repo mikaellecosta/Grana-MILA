@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "332302678143",
+    "project_id": "whitelabel-quiz",
+    "storage_bucket": "whitelabel-quiz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332302678143:android:2d6c5672e0ca6c0a86e74a",
+        "android_client_info": {
+          "package_name": "com.example.test_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332302678143-q73t83tb4t2ls4gpsgvkr3chmk38l79e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.test_flutter",
+            "certificate_hash": "dac5e1dc1e62a9200b5b984eb40ca78b0dd869df"
+          }
+        },
+        {
+          "client_id": "332302678143-sgav9nm02nm5vej8dv3f8k7o1r0gddj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNvFyKryndzpPxP3c3Yzg9NVWAACk_Ou0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332302678143-sgav9nm02nm5vej8dv3f8k7o1r0gddj9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332302678143-gjusgeick8ikjaogk8hsa7v69jr93ol4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "albert.ifce.WhitelabelQuiz"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

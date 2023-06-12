@@ -1,0 +1,37 @@
+
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    always_put_required_named_parameters_first: false
+    always_use_package_imports: true
+    avoid_classes_with_only_static_members: false
+    avoid_dynamic_calls: false
+    avoid_field_initializers_in_const_classes: true
+    avoid_unused_constructor_parameters: false
+    constant_identifier_names: true
+    control_flow_in_finally: true
+    directives_ordering: true
+    empty_statements: true
+    flutter_style_todos: true
+    join_return_with_assignment: true
+    lines_longer_than_80_chars: true
+    no_adjacent_strings_in_list: true
+    parameter_assignments: true
+    prefer_asserts_in_initializer_lists: true
+    prefer_asserts_with_message: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_constructors_over_static_methods: true
+    prefer_final_in_for_each: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    prefer_typing_uninitialized_variables: true
+    test_types_in_equals: true
+    unnecessary_null_aware_assignments: true
+    use_setters_to_change_properties: false
+    sort_pub_dependencies: false
+    sort_constructors_first: true
+    avoid_unnecessary_containers: true
+    avoid_web_libraries_in_flutter: true
