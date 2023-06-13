@@ -45,9 +45,3 @@ Ao responder todas as perguntas de um nível, o jogador é redirecionado para a 
 - usar essas moedas para adquirir itens;
 - Responder perguntas;
 - subir de nivel no jogo;
-
-Se você quiser contribuir para o projeto, basta fazer um fork e enviar uma pull request com suas alterações.
-
-Licença
-Este projeto está licenciado sob a Licença MIT - consulte o arquivo LICENSE para obter detalhes.
-
