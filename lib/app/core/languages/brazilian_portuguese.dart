@@ -1,4 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
 class BrazilianPortuguese {
   actualLevel(int actualLevel) {
     return 'Nível $actualLevel';
@@ -42,17 +41,6 @@ class BrazilianPortuguese {
 
   String teachercoordinator = 'Carlos Henrique Leitão Cavalcante ';
 
-  //tutorial_page
-  List tutorialList = [
-    'Seja bem-vindo ao Grana!!',
-    'Aqui você aprenderá a utilizar seu dinheiro da melhor forma possível!',
-    'Em cada nível você responderá perguntas relacionadas ao uso adequado do dinheiro, poupando sempre que tiver oportunidade.',
-    'Para passar de nível é necessário responder uma certa quantidade de perguntas corretamente.',
-    'Você poderá comprar ajudas, estas irão lhe ajudar à responder as perguntas. Mas tome cuidado para não acabar o seu dinheiro comprando apenas isso.',
-    'Após finalizar cada nível você poderá guardar suas moedas no Banco ou comprar alguma coisa na loja com elas.',
-    'Para começar, escolha o seu personagem.',
-  ];
-
   //answer_options_page
   String timeOver = '!!Tempo esgotado!!';
   String right = 'Acertou';
@@ -90,9 +78,4 @@ class BrazilianPortuguese {
   String connectionStatus = 'Status da conexão';
   String internetTestMessage = 'No primeiro acesso é necessário'
       ' estar conectado à internet.';
-
-  //shop_page
-  String itemAlreadyAdquired = 'Você já adquiriu esse item!';
-  String confirmationBuyItem = 'Você deseja realmente comprar este item?';
-  String insuficientCoins = 'Infelizmente, você não possui moedas suficientes!';
 }

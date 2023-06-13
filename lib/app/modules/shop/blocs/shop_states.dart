@@ -13,4 +13,3 @@ class ChangingActualProduct implements ProcessingState {}
 class SuccessfullyChangedActualProduct implements SuccessState {}
 
 class UnableToChangeActualProduct implements ErrorState {}
-

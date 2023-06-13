@@ -118,11 +118,10 @@ flutter:
     - assets/images/product-notebook.png
     - assets/images/white-answer-item-button.png
     - assets/images/green-mountains-background.png
-    - assets/images/purchase-locked-button-empty.png
-    - assets/images/purchase-button-empty.png
-    - assets/images/white-speech-bubble.png
-    - assets/images/pig1.png
-    - assets/images/pig2.png
-    - assets/images/pig3.png
-    - assets/images/you-are-box.png
+
   
+fonts:
+  - family: Gorditas
+    fonts:
+      - asset: assets/fonts/Gorditas-Bold.ttf
+      - asset: assets/fonts/Gorditas-Regular.ttf

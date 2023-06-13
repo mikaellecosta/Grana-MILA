@@ -14,5 +14,3 @@ class NextProductInProductList implements ShopEvent {
 class PreviousProductInProductList implements ShopEvent {
   const PreviousProductInProductList();
 }
-
-

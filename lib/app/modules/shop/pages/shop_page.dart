@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
-import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
-import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/shop/blocs/shop_bloc.dart';
 import 'package:lasic_grana_flutter/app/modules/shop/blocs/shop_events.dart';
@@ -30,6 +29,7 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
+    // TODO(YuriOliv): Faltam funções para o botão de comprar
     // Retorna a tela em si
     return Scaffold(
       body: Stack(
@@ -45,146 +45,19 @@ class _ShopPageState extends State<ShopPage> {
                 height: mediaQuery.size.height * 0.08,
               ),
               // Imagem mostrando o valor atual no banco do jogador
-              _imgBank(mediaQuery),
+              imgBank(mediaQuery),
               SizedBox(
                 height: mediaQuery.size.height * 0.61,
               ),
               // Botão comprar da loja,
-
-              BlocBuilder<ShopBloc, AppState>(
-                  bloc: shopBloc,
-                  builder: (context, state) {
-                    if (state is InitialState) {
-                      return const SizedBox();
-                    }
-
-                    return BlocBuilder<UserDataBloc, AppState>(
-                        bloc: userDataBloc,
-                        builder: (context, state) {
-                          bool haveMoneyToBuyItem = false;
-                          bool alreadyAdquiredItem = false;
-
-                          if (userDataBloc.isSaved) {
-                            // Variaveis para melhor legibilidade do if abaixo
-                            final coins = userDataBloc.userData.coins;
-                            final productsPurchased =
-                                userDataBloc.userData.productsPurchased;
-                            final actualProduct =
-                                shopBloc.productList[shopBloc.actualProduct];
-
-                            if (productsPurchased
-                                .contains(actualProduct.name)) {
-                              alreadyAdquiredItem = true;
-                            } else if (coins >= actualProduct.value) {
-                              haveMoneyToBuyItem = true;
-                            }
-                          }
-
-                          return GestureDetector(
-                            onTap: () => {
-                              if (alreadyAdquiredItem)
-                                {
-                                  showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (context) => Stack(
-                                      children: [
-                                        _whiteBoxForAlertDialog(mediaQuery),
-                                        _alertTittle(mediaQuery),
-                                        _alertInformation(
-                                            mediaQuery,
-                                            BrazilianPortuguese()
-                                                .itemAlreadyAdquired),
-                                        _exitAlertOkButton(mediaQuery),
-                                      ],
-                                    ),
-                                  ),
-                                }
-                              else if (haveMoneyToBuyItem)
-                                {
-                                  showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (context) => Stack(
-                                      children: [
-                                        _whiteBoxForAlertDialog(mediaQuery),
-                                        _alertTittle(mediaQuery),
-                                        _alertInformation(
-                                            mediaQuery,
-                                            BrazilianPortuguese()
-                                                .confirmationBuyItem),
-                                        _yesNoButton(mediaQuery),
-                                      ],
-                                    ),
-                                  ),
-                                }
-                              else
-                                {
-                                  showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (context) => Stack(
-                                      children: [
-                                        _whiteBoxForAlertDialog(mediaQuery),
-                                        _alertTittle(mediaQuery),
-                                        _alertInformation(
-                                            mediaQuery,
-                                            BrazilianPortuguese()
-                                                .insuficientCoins),
-                                        _exitAlertOkButton(mediaQuery),
-                                      ],
-                                    ),
-                                  ),
-                                }
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height: mediaQuery.size.height * 0.12,
-                                  width: mediaQuery.size.width * 0.65,
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Image.asset(
-                                        alreadyAdquiredItem
-                                            ? 'assets/images/purchase-button-empty.png'
-                                            : haveMoneyToBuyItem
-                                                ? 'assets/images/purchase-button.png'
-                                                : 'assets/images/purchase-locked-button-empty.png',
-                                        fit: BoxFit.fill,
-                                      ),
-                                      Positioned(
-                                        top: mediaQuery.size.width * 0.07,
-                                        left: mediaQuery.size.width * 0.07,
-                                        child: SizedBox(
-                                          width: mediaQuery.size.width * 0.3,
-                                          child: Text(
-                                            alreadyAdquiredItem
-                                                ? 'Adquirido'
-                                                : haveMoneyToBuyItem
-                                                    ? ''
-                                                    : 'Comprar',
-                                            style: const TextStyle(
-                                                fontSize: 26,
-                                                fontWeight: FontWeight.bold),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        });
-                  })
+              buyButton(mediaQuery),
             ],
           ),
 
           // Column com valor do banco do usuario
           BlocBuilder<UserDataBloc, AppState>(
+              // TODO(YuriOliv): testar se este bloc esta trocando
+              //  o valor de moedas do usuario ao clicar no botão comprar
               bloc: userDataBloc,
               builder: (context, state) {
                 if (state is InitialState) {
@@ -206,10 +79,7 @@ class _ShopPageState extends State<ShopPage> {
                             userDataBloc.isSaved
                                 ? '${userDataBloc.userData.coins}'
                                 : '0',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTypography.font28Bold(),
                           ),
                         ),
                       ],
@@ -224,7 +94,7 @@ class _ShopPageState extends State<ShopPage> {
                 height: mediaQuery.size.height * 0.07,
               ),
               // Botão para fechar view "loja"
-              _exitButton(mediaQuery)
+              exitButton(mediaQuery)
             ],
           ),
           // Column para colocar os produtos da loja
@@ -249,11 +119,7 @@ class _ShopPageState extends State<ShopPage> {
                             // Mostra nome do produto
                             Text(
                               shopBloc.productList[shopBloc.actualProduct].name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 28.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.font28BoldColor(),
                             ),
                             // Mostra imagem do produto
                             SizedBox(
@@ -275,11 +141,7 @@ class _ShopPageState extends State<ShopPage> {
                             Text(
                               shopBloc.productList[shopBloc.actualProduct].value
                                   .toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.font24BoldColorWhite(),
                             ),
                           ],
                         ),
@@ -307,12 +169,12 @@ class _ShopPageState extends State<ShopPage> {
                       SizedBox(
                         width: mediaQuery.size.width * 0.13,
                       ),
-                      _previousButton(mediaQuery),
+                      previousButton(mediaQuery),
                       // Botão de proximo produto
                       SizedBox(
                         width: mediaQuery.size.width * 0.43,
                       ),
-                      _nextButton(mediaQuery)
+                      nextButton(mediaQuery)
                     ],
                   ),
                 ],
@@ -320,13 +182,13 @@ class _ShopPageState extends State<ShopPage> {
             },
           ),
           // Coluna com imagem de moedas entre o valor do produto
-          _imgCoin(mediaQuery)
+          imgCoin(mediaQuery)
         ],
       ),
     );
   }
 
-  Widget _previousButton(MediaQueryData mediaQuery) {
+  Widget previousButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       onTap: () => {
         if (shopBloc.actualProduct != 0)
@@ -347,7 +209,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _nextButton(MediaQueryData mediaQuery) {
+  Widget nextButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       onTap: () {
         if (shopBloc.actualProduct != shopBloc.productList.length - 1) {
@@ -367,7 +229,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _exitButton(MediaQueryData mediaQuery) {
+  Widget exitButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       onTap: () => Modular.to.navigate('../'),
       child: Row(
@@ -388,7 +250,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _imgCoin(MediaQueryData mediaQuery) {
+  Widget imgCoin(MediaQueryData mediaQuery) {
     return Column(
       children: [
         SizedBox(
@@ -413,7 +275,7 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   // Imagem mostrando o valor atual no banco do jogador
-  Widget _imgBank(MediaQueryData mediaQuery) {
+  Widget imgBank(MediaQueryData mediaQuery) {
     return Row(
       children: [
         SizedBox(
@@ -431,199 +293,25 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _whiteBoxForAlertDialog(MediaQueryData mediaQuery) {
-    return Column(
+  // Botão comprar da loja,
+  Widget buyButton(MediaQueryData mediaQuery) {
+    // TODO(YuriOliv): transformar em um gestureDetector,
+    //  com um blocBuilder por cima
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: mediaQuery.size.width * 0.03),
-          child: Image.asset('assets/images/white-box-background.png'),
-        ),
-      ],
-    );
-  }
-
-  Widget _yesNoButton(MediaQueryData mediaQuery) {
-    return Column(
-      children: [
+        // SizedBox(
+        //   width: mediaQuery.size.width * 0.18,
+        // ),
         SizedBox(
-          height: mediaQuery.size.height * 0.55,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // 1° botão do alert dialog
-            GestureDetector(
-              onTap: () {
-                _yesButtonConfirmation();
-                userDataBloc.add(const UpdateUserData());
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    height: mediaQuery.size.height * 0.06,
-                    child:
-                        Image.asset('assets/images/blue-button-background.png'),
-                  ),
-                  const Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      'Sim',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Espaço entre botões
-            SizedBox(
-              width: mediaQuery.size.width * 0.1,
-            ),
-            // 2° botão do alert dialog
-            GestureDetector(
-              onTap: () {
-                Modular.to.pop();
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    height: mediaQuery.size.height * 0.06,
-                    child:
-                        Image.asset('assets/images/blue-button-background.png'),
-                  ),
-                  const Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      'Não',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _alertTittle(MediaQueryData mediaQuery) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Column(children: [
-        SizedBox(
-          height: mediaQuery.size.height * 0.39,
-        ),
-        const Material(
-            color: Colors.transparent,
-            child: Text(
-              'Alerta',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-              ),
-            ))
-      ])
-    ]);
-  }
-
-  Widget _alertInformation(MediaQueryData mediaQuery, String informationText) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: mediaQuery.size.width * 0.1),
-      child: Column(
-        children: [
-          SizedBox(
-            height: mediaQuery.size.height * 0.47,
+          height: mediaQuery.size.height * 0.12,
+          width: mediaQuery.size.width * 0.65,
+          child: Image.asset(
+            'assets/images/purchase-button.png',
+            fit: BoxFit.fill,
           ),
-          Material(
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: mediaQuery.size.width,
-                  child: Text(
-                    informationText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _yesButtonConfirmation() {
-    // Variaveis para melhor legibilidade do if abaixo
-    final coins = userDataBloc.userData.coins;
-    final actualProductValue =
-        shopBloc.productList[shopBloc.actualProduct].value;
-
-    if (coins >= actualProductValue) {
-      userDataBloc.add(
-          BuyProduct(product: shopBloc.productList[shopBloc.actualProduct]));
-      userDataBloc.add(const UpdateUserData());
-
-      Modular.to.pop();
-    }
-  }
-
-  Widget _exitAlertOkButton(MediaQueryData mediaQuery) {
-    return Column(
-      children: [
-        SizedBox(
-          height: mediaQuery.size.height * 0.55,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // 1° botão do alert dialog
-            GestureDetector(
-              onTap: () {
-                Modular.to.pop();
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    height: mediaQuery.size.height * 0.06,
-                    child:
-                        Image.asset('assets/images/blue-button-background.png'),
-                  ),
-                  const Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      'OK',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
       ],
     );
   }
 }
-// Botão comprar da loja
-// Widget buyButton(MediaQueryData mediaQuery) {
-
-// }

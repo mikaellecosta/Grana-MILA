@@ -3,6 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 
@@ -57,9 +58,8 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                     child: Text(
                       BrazilianPortuguese().attention,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.w900),
-                    ),
+                      style: AppTypography.font24Bold()
+                      ),
                   ),
                 ],
               ),
@@ -79,8 +79,7 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                       child: Text(
                         BrazilianPortuguese().storeCoins,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w600),
+                        style: AppTypography.font22Bold(),
                       ),
                     ),
                   ],
@@ -134,13 +133,12 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                     ),
                     Container(
                       alignment: Alignment.center,
-                      child: const Material(
+                      child:  Material(
                         color: Colors.transparent,
                         child: Text(
                           'OK',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
-                        ),
+                          style: AppTypography.font20Bold(),
+                          )
                       ),
                     ),
                   ],
