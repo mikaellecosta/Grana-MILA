@@ -51,6 +51,15 @@ class AboutTeamText extends StatelessWidget {
             BrazilianPortuguese().scholarProgrammers[1],
             style: const TextStyle(fontSize: 16),
           ),
+          Text(
+            BrazilianPortuguese().scholarProgrammers[2],
+            style: const TextStyle(fontSize: 16),
+          ),
+          // Texto 5
+          Text(
+            BrazilianPortuguese().scholarProgrammers[3],
+            style: const TextStyle(fontSize: 16),
+          ),
           // Espaço entre textos
           SizedBox(height: mediaQuery.size.height * 0.01),
           // Texto 6

@@ -29,7 +29,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   void initState() {
-    // TODO(YuriOliv): Resolver bug no Timer ao minimizar e voltar.
     // Timer ate a resposta ser dada como errada e passar para a proxima
 
     timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -86,9 +85,6 @@ class _QuestionPageState extends State<QuestionPage> {
                 // Widget com o texto
                 Material(
                   color: Colors.transparent,
-                  // TODO(YuriOliv): no momento está como um texto,
-                  //  mas acho que é uma imagem, fora isso o texto
-                  //  parece ficar muito escuro, verificar
                   child: Text(
                     BrazilianPortuguese().timeOver,
                     style: const TextStyle(
@@ -196,8 +192,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 // Botão que manda o usuario da tela de pergunta para tela
                 // com opções de resposta
                 bool expandedQuestion;
-                
-                if (levelBloc.isTimeActive == false){
+
+                if (levelBloc.isTimeActive == false) {
                   expandedQuestion = false;
                 } else {
                   expandedQuestion = true;
@@ -420,7 +416,7 @@ class _QuestionPageState extends State<QuestionPage> {
     return GestureDetector(
       onTap: () {
         levelBloc.isTimeActive = false;
-      }, // TODO(YuriOliv): Criar função de dica
+      },
       child: Row(
         children: [
           SizedBox(width: mediaQuery.size.width * 0.07),
@@ -439,7 +435,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget buttonSkip(MediaQueryData mediaQuery) {
     return GestureDetector(
-      // TODO(YuriOliv): Criar função para pular pergunta
       onTap: () {
         levelBloc.isTimeActive = false;
       },
@@ -461,8 +456,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget buttonMoreTime(MediaQueryData mediaQuery) {
     return GestureDetector(
-      // TODO(YuriOliv): Criar função para adicionar tempo
-      // no contador
       onTap: () {
         levelBloc.isTimeActive = false;
       },
@@ -484,7 +477,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget buttonDelete(MediaQueryData mediaQuery) {
     return GestureDetector(
-      // TODO(YuriOliv): Criar função para eliminar item
       onTap: () {
         levelBloc.isTimeActive = false;
       },

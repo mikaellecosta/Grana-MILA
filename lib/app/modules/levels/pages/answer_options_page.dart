@@ -34,19 +34,16 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     _levelBloc.optionSelected = -1;
 
     // Timer ate a resposta ser dada como errada e passar para a proxima
-    timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!levelBloc.isAnswerOptionSelected) {
-        if (levelBloc.isTimeActive == true){
-              timer?.cancel();
-    timerToAnswerQuestion?.cancel();
-            }
-        else if  (levelBloc.timerToAnswer > 0) {
+    _timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!_levelBloc.isAnswerOptionSelected) {
+        if (_levelBloc.isTimeActive == true) {
+          _timer?.cancel();
+          _timerToAnswerQuestion?.cancel();
+        } else if (_levelBloc.timerToAnswer > 0) {
           if (!_isTimeStop) {
             _levelBloc.add(const ReduceTimer());
           }
-        } 
-            
-        else {
+        } else {
           // É necessario para o timerToAnswerQuestion
           _timerToAnswerQuestion?.cancel();
           // Função que verifica o acerto da questão e adiciona as moedas
@@ -151,9 +148,9 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
               GestureDetector(
                   onTap: () {
                     Modular.to.navigate('./Question');
-                    levelBloc.isTimeActive = true;
+                    _levelBloc.isTimeActive = true;
                   },
-                  child: questionBox(mediaQuery)),
+                  child: _questionBox(mediaQuery)),
 
               // Fundo da opção de resposta 1
               BlocBuilder(
@@ -675,7 +672,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
       ),
     );
   }
-  
+
   // Botão de adicinar 15 segundos no tempo de resposta
   Widget _moreTimeButton(MediaQueryData mediaQuery) {
     return GestureDetector(

@@ -9,11 +9,11 @@ class BrazilianPortuguese {
 
   //about_team_text
   String aboutGranaExplanation =
-      ' O Grana é um projeto desenvolvido em 2018 pelo IFCE -'
-      'Campus Canindé, que visa ensinar Educação Financeira para '
-      'crianças dos assentamentos rurais de Canindé.';
+      ' O Grana Flutter é um projeto desenvolvido em 2023 pelo '
+      'IFCE - Campus Maracanaú, que visa ensinar Educação '
+      'Financeira para crianças dos assentamentos rurais.';
 
-  String reviewtests = 'Equipe LASIC';
+  String reviewtests = 'Francisco Yuri Oliveira';
 
   List<String> titles = [
     'Equipe:',
@@ -25,8 +25,10 @@ class BrazilianPortuguese {
   ];
 
   List<String> scholarProgrammers = [
-    'Maria Luciana Almeida Pereira',
-    'Francisco Erialdo Domingos Freitas'
+    'Ana Flávia Torres',
+    'Isabelly Pinheiro',
+    'Larissa Nascimento',
+    'Mikaelle Costa'
   ];
 
   List<String> volunteerDesigns = [
