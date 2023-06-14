@@ -33,7 +33,6 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
   void initState() {
     _levelBloc.optionSelected = -1;
 
-    // TODO(YuriOliv): Resolver bug no Timer ao minimizar e voltar.
     // Timer ate a resposta ser dada como errada e passar para a proxima
     _timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!_levelBloc.isAnswerOptionSelected) {
@@ -84,9 +83,6 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                 // Widget com o texto
                 Material(
                   color: Colors.transparent,
-                  // TODO(YuriOliv): no momento está como um texto,
-                  //  mas acho que é uma imagem, fora isso o texto
-                  //  parece ficar muito escuro, verificar
                   child: Text(
                     BrazilianPortuguese().timeOver,
                     style: const TextStyle(
@@ -142,7 +138,6 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
               ),
             ],
           ),
-          // TODO(YuriOliv): Zoom ao clicar na pergunta
           // Column do fundo para mostrar a pergunta
           Column(
             children: <Widget>[
@@ -395,10 +390,6 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   // Texto da pergunta atual,
-                                  // TODO(YuriOliv): criar função para adaptar o
-                                  //  tamanho do texto da pergunta? se o texto
-                                  //  for muito grande o resto da
-                                  //  pergunta não aparece
                                   Text(
                                     _levelBloc
                                         .level

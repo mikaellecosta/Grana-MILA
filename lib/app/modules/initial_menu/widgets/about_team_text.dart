@@ -18,10 +18,6 @@ class AboutTeamText extends StatelessWidget {
         left: mediaQuery.size.width * 0.14,
         right: mediaQuery.size.width * 0.14,
       ),
-      // TODO(YuriOliv): falta adicionar ao style a fonte dos textos
-      // TODO(YuriOliv): muito provavelmente vai ser necessario um
-      //  arquivo no remote config do firebase
-      //  para criar esta pagina automaticamente
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

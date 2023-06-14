@@ -18,7 +18,6 @@ class RewardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    // TODO(YuriOliv): adicionar o resto da tela, e retornos diferentes
     // Olhar a issue da tela de premiação(j)
 
     // Para quando o usuario errar todas as perguntas
