@@ -3,6 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 
 class TreasureButton extends StatelessWidget {
   TreasureButton({
@@ -86,12 +87,11 @@ class TreasureButton extends StatelessWidget {
                         SizedBox(
                           height: mediaQuery.size.height * 0.37,
                         ),
-                        const Text(
+                        Text(
                           'Alerta',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w900),
-                        ),
+                          style: AppTypography.font24Bold(),
+                          )
                       ],
                     ),
                   ),
@@ -108,8 +108,7 @@ class TreasureButton extends StatelessWidget {
                           Text(
                             BrazilianPortuguese().lockedLevel,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600),
+                            style: AppTypography.font20Bold(),
                           ),
                         ],
                       ),
@@ -142,11 +141,9 @@ class TreasureButton extends StatelessWidget {
                                   ),
                                   Container(
                                     alignment: Alignment.center,
-                                    child: const Text(
+                                    child: Text(
                                       'OK',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900),
+                                      style: AppTypography.font20Bold(),
                                     ),
                                   ),
                                 ],

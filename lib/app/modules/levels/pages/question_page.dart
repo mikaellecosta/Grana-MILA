@@ -7,6 +7,7 @@ import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_events.dart';
@@ -304,10 +305,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             child: Text(
                               levelBloc.level
                                   .questions[levelBloc.actualQuestion].question,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                              ),
+                              style: AppTypography.font20Bold(),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -345,10 +343,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               levelBloc.levelCoins.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                           // Espaço entre o widget e o lado esquerdo da tela
@@ -360,10 +355,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             child: Text(
                               BrazilianPortuguese()
                                   .actualLevel(levelBloc.actualLevel),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                         ],
@@ -380,10 +372,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               userDataBloc.userData.coins.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                           // 4° dado, timer vazio na pergunta

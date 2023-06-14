@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
 import 'package:lasic_grana_flutter/app/core/storage/hive_initializer.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/root_module.dart';
 import 'package:lasic_grana_flutter/app/root_widget.dart';
 import 'package:lasic_grana_flutter/services/remote_config_service.dart';
@@ -19,6 +20,7 @@ class InternetVerifyHome extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Verificando ',
       theme: ThemeData(
+        fontFamily: AppTypography.fontFamily,
         primarySwatch: Colors.red,
       ),
       home: const InternetVerifyPage(),
@@ -149,10 +151,7 @@ class InternetVerifyPageState extends State<InternetVerifyPage> {
             child: Text(
               BrazilianPortuguese().connectionStatus,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-              ),
+              style: AppTypography.font24Bold()
             ))
       ])
     ]);
@@ -173,10 +172,7 @@ class InternetVerifyPageState extends State<InternetVerifyPage> {
                 Text(
                   _connection,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTypography.font20Bold()
                 ),
               ],
             ),
@@ -201,10 +197,7 @@ class InternetVerifyPageState extends State<InternetVerifyPage> {
                 Text(
                   BrazilianPortuguese().internetTestMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTypography.font20Bold()
                 ),
               ],
             ),

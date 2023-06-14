@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/centered_image_button_with_text.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
@@ -34,8 +35,7 @@ class CongratulationPage extends StatelessWidget {
                 width: mediaQuery.size.width * 0.7,
                 child: Text(
                   BrazilianPortuguese().congratulations,
-                  style: const TextStyle(
-                      fontSize: 40, fontWeight: FontWeight.w900),
+                  style: AppTypography.font40Bold(),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -46,8 +46,7 @@ class CongratulationPage extends StatelessWidget {
                 child: Center(
                   child: Text(
                     BrazilianPortuguese().levelTwo,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.w700),
+                    style: AppTypography.font22Bold(),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -58,7 +57,7 @@ class CongratulationPage extends StatelessWidget {
                   horizontalSize: 0.22,
                   localImagem: 'assets/images/yellow-button-background.png',
                   text: 'OK',
-                  buttonTextFontSize: 20,
+                  
                   onTap: () {
                     Modular.to.navigate('./Reward');
                   }),

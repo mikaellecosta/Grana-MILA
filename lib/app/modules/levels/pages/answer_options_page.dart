@@ -7,6 +7,7 @@ import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
+import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_events.dart';
@@ -94,11 +95,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                   //  parece ficar muito escuro, verificar
                   child: Text(
                     BrazilianPortuguese().timeOver,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 255, 0, 0),
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: AppTypography.font28BoldColor(),
                   ),
                 ),
                 // Passa para a proxima questão
@@ -309,18 +306,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                                             levelBloc.optionSelected
                                         ? BrazilianPortuguese().right
                                         : BrazilianPortuguese().wrong,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  color: levelBloc
-                                              .level
-                                              .questions[
-                                                  levelBloc.actualQuestion]
-                                              .answerIndex ==
-                                          levelBloc.optionSelected
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
+                                style: AppTypography().font24BoldSelect(levelBloc),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -349,10 +335,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                                         .level
                                         .questions[levelBloc.actualQuestion]
                                         .question,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                    ),
+                                    style: AppTypography.font16Bold(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -394,10 +377,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               levelBloc.levelCoins.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                           // Espaço entre o widget e o lado esquerdo da tela
@@ -409,10 +389,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             child: Text(
                               BrazilianPortuguese()
                                   .actualLevel(levelBloc.actualLevel),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                         ],
@@ -429,10 +406,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               userDataBloc.userData.coins.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                           // Espaço entre o widget e o lado esquerdo da tela
@@ -444,10 +418,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               levelBloc.timerToAnswer.toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTypography.font14Bold(),
                             ),
                           ),
                         ],
