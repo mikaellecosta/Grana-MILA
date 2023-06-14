@@ -36,15 +36,21 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     // Timer ate a resposta ser dada como errada e passar para a proxima
     timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!levelBloc.isAnswerOptionSelected) {
-        if (levelBloc.timerToAnswer > 0) {
+        if (levelBloc.isTimeActive == true){
+              timer?.cancel();
+    timerToAnswerQuestion?.cancel();
+            }
+        else if  (levelBloc.timerToAnswer > 0) {
           levelBloc.add(const ReduceTimer());
-        } else {
+        } 
+            
+        else {
           // É necessario para o timerToAnswerQuestion
           timerToAnswerQuestion?.cancel();
           // Função que verifica o acerto da questão e adiciona as moedas
           // Colocar aqui pois ela é necessaria para passar de questão
           levelBloc.add(const CorrectQuestionCoinsIncrease());
-
+            
           // Inicia um timer para passar para proxima tela
           // Passa para a proxima questão, até o fim da quantidade de
           // questões do level
@@ -143,8 +149,13 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
             children: <Widget>[
               SizedBox(height: mediaQuery.size.height * 0.15),
               // Fundo para mostrar a pergunta
-              questionBox(mediaQuery),
-              
+              GestureDetector(
+                  onTap: () {
+                    Modular.to.navigate('./Question');
+                    levelBloc.isTimeActive = true;
+                  },
+                  child: questionBox(mediaQuery)),
+
               // Fundo da opção de resposta 1
               AnswerOptionButton(
                 mediaQuery: mediaQuery,
@@ -199,16 +210,15 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                 children: [
                   // Botão dica
                   buttonTip(mediaQuery),
-                  
+
                   // Botão pular
                   buttonSkip(mediaQuery),
-                  
+
                   // Botão adicionar tempo
                   buttonMoreTime(mediaQuery),
-                  
+
                   // Botão eliminar item
                   buttonDelete(mediaQuery),
-                  
                 ],
               ),
             ],
@@ -424,135 +434,135 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     );
   }
 
-Widget questionBox(MediaQueryData mediaQuery){
-   return Row(
-              children: [
-                 SizedBox(width: mediaQuery.size.width * 0.07),
-                 SizedBox(
-                   height: mediaQuery.size.height * 0.32,
-                   width: mediaQuery.size.width * 0.86,
-                   child: Image.asset(
-                     'assets/images/white-box-background.png',
-                     fit: BoxFit.fill,
-                   ),
-                 ),
-               ],
-             );
+  Widget questionBox(MediaQueryData mediaQuery) {
+    return Row(
+      children: [
+        SizedBox(width: mediaQuery.size.width * 0.07),
+        SizedBox(
+          height: mediaQuery.size.height * 0.32,
+          width: mediaQuery.size.width * 0.86,
+          child: Image.asset(
+            'assets/images/white-box-background.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ],
+    );
   }
 
-Widget boxMenu(MediaQueryData mediaQuery){
-  return SizedBox(
-                    height: mediaQuery.size.height * 0.11,
-                    width: mediaQuery.size.width * 0.58,
-                    child: Image.asset(
-                      'assets/images/level-stats-box-background.png',
-                      fit: BoxFit.fill,
-                    ),
-                  );
-}
+  Widget boxMenu(MediaQueryData mediaQuery) {
+    return SizedBox(
+      height: mediaQuery.size.height * 0.11,
+      width: mediaQuery.size.width * 0.58,
+      child: Image.asset(
+        'assets/images/level-stats-box-background.png',
+        fit: BoxFit.fill,
+      ),
+    );
+  }
 
-Widget buttonClose(MediaQueryData mediaQuery){
-  return GestureDetector(
-                    // Caso o usuario ja tenha ganho alguma moeda
-                    // Sera avisado que suas moedas serão guardadas (tela)
-                    onTap: () {
-                      levelBloc.levelCoins > 0
-                          ? Modular.to.navigate('./LevelClosingWithEarnedCoins')
-                          : Modular.to.navigate('../');
-                    },
-                    child: Row(
-                      children: [
-                        SizedBox(width: mediaQuery.size.width * 0.14),
-                        SizedBox(
-                          height: mediaQuery.size.height * 0.08,
-                          width: mediaQuery.size.width * 0.16,
-                          child: Image.asset(
-                            'assets/images/button-close.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-}
+  Widget buttonClose(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // Caso o usuario ja tenha ganho alguma moeda
+      // Sera avisado que suas moedas serão guardadas (tela)
+      onTap: () {
+        levelBloc.levelCoins > 0
+            ? Modular.to.navigate('./LevelClosingWithEarnedCoins')
+            : Modular.to.navigate('../');
+      },
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.14),
+          SizedBox(
+            height: mediaQuery.size.height * 0.08,
+            width: mediaQuery.size.width * 0.16,
+            child: Image.asset(
+              'assets/images/button-close.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-Widget buttonTip(MediaQueryData mediaQuery){
-  return GestureDetector(
-                    onTap: () {}, // TODO(YuriOliv): Criar função de dica
-                    child: Row(
-                      children: [
-                        SizedBox(width: mediaQuery.size.width * 0.07),
-                        SizedBox(
-                          height: mediaQuery.size.height * 0.10,
-                          width: mediaQuery.size.width * 0.18,
-                          child: Image.asset(
-                            'assets/images/help-button-tip.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-}
+  Widget buttonTip(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      onTap: () {}, // TODO(YuriOliv): Criar função de dica
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.07),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-tip.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-Widget buttonSkip(MediaQueryData mediaQuery){
-  return GestureDetector(
-                    // TODO(YuriOliv): Criar função para pular pergunta
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        SizedBox(width: mediaQuery.size.width * 0.05),
-                        SizedBox(
-                          height: mediaQuery.size.height * 0.10,
-                          width: mediaQuery.size.width * 0.18,
-                          child: Image.asset(
-                            'assets/images/help-button-skip.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-}
+  Widget buttonSkip(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para pular pergunta
+      onTap: () {},
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-skip.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-Widget buttonMoreTime(MediaQueryData mediaQuery){
-  return GestureDetector(
-                    // TODO(YuriOliv): Criar função para adicionar tempo
-                    // no contador
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        SizedBox(width: mediaQuery.size.width * 0.05),
-                        SizedBox(
-                          height: mediaQuery.size.height * 0.10,
-                          width: mediaQuery.size.width * 0.18,
-                          child: Image.asset(
-                            'assets/images/help-button-more-time.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-}
+  Widget buttonMoreTime(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para adicionar tempo
+      // no contador
+      onTap: () {},
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-more-time.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-Widget buttonDelete(MediaQueryData mediaQuery){
-  return GestureDetector(
-                    // TODO(YuriOliv): Criar função para eliminar item
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        SizedBox(width: mediaQuery.size.width * 0.05),
-                        SizedBox(
-                          height: mediaQuery.size.height * 0.10,
-                          width: mediaQuery.size.width * 0.18,
-                          child: Image.asset(
-                            'assets/images/help-button-delete.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-}
+  Widget buttonDelete(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para eliminar item
+      onTap: () {},
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-delete.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
