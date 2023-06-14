@@ -40,6 +40,7 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
 
   // Variaveis de tempo maximo para responder
   int timerToAnswer = 60;
+  bool isTimeActive = false;
 
   // Variaveis para modificar os dados do usuario no final do level
   int answeredQuestions = 0;

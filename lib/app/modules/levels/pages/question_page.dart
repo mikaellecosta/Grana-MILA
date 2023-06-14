@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
+import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
@@ -21,16 +24,100 @@ class _QuestionPageState extends State<QuestionPage> {
 
   final levelBloc = Modular.get<LevelBloc>();
   final userDataBloc = Modular.get<UserDataBloc>();
+  Timer? timer;
+  Timer? timerToAnswerQuestion;
 
   @override
   void initState() {
+    // TODO(YuriOliv): Resolver bug no Timer ao minimizar e voltar.
+    // Timer ate a resposta ser dada como errada e passar para a proxima
+
+    timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!levelBloc.isAnswerOptionSelected) {
+        if (levelBloc.isTimeActive == false) {
+          timer?.cancel();
+          timerToAnswerQuestion?.cancel();
+        } else if (levelBloc.timerToAnswer > 0) {
+          levelBloc.add(const ReduceTimer());
+        } else {
+          // É necessario para o timerToAnswerQuestion
+          timerToAnswerQuestion?.cancel();
+
+          // Função que verifica o acerto da questão e adiciona as moedas
+          // Colocar aqui pois ela é necessaria para passar de questão
+          levelBloc.add(const CorrectQuestionCoinsIncrease());
+
+          // Inicia um timer para passar para proxima tela
+          // Passa para a proxima questão, até o fim da quantidade de
+          // questões do level
+          if (levelBloc.auxQuestionNumber <
+              levelBloc.level.questionsToComplete - 1) {
+            timer = Timer(const Duration(seconds: 1), () {
+              Modular.to.navigate('./Question');
+            });
+          }
+          // Se o usuario ja tiver completado esse level antes,
+          // Ele é mandado para o menu de leveis
+          else if (userDataBloc.userData.completedLevels >=
+              levelBloc.level.number) {
+            // somar as moedas ganhas do usuario e leva-lo para o menu de leveis
+            timer = Timer(const Duration(seconds: 1), () {
+              userDataBloc.userData.coins =
+                  userDataBloc.userData.coins + levelBloc.levelCoins;
+              userDataBloc.add(const UpdateUserData());
+              Modular.to.navigate('../');
+            });
+          } // Se o usuario não tiver completado esse level antes,
+          // Ele é levado para a tela de premiação
+          else {
+            timer = Timer(const Duration(seconds: 1), () {
+              Modular.to.navigate('./Reward');
+            });
+          }
+
+          // showDialog que aparece quando acaba o timer do levelBloc
+          showDialog(
+            barrierColor: const Color.fromARGB(40, 0, 0, 0),
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Widget com o texto
+                Material(
+                  color: Colors.transparent,
+                  // TODO(YuriOliv): no momento está como um texto,
+                  //  mas acho que é uma imagem, fora isso o texto
+                  //  parece ficar muito escuro, verificar
+                  child: Text(
+                    BrazilianPortuguese().timeOver,
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 255, 0, 0),
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                // Passa para a proxima questão
+              ],
+            ),
+          );
+        }
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer?.cancel();
+    timerToAnswerQuestion?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -102,29 +189,92 @@ class _QuestionPageState extends State<QuestionPage> {
           ),
           // Column do botão que manda o usuario da tela de pergunta para tela
           // com opções de resposta
-          Column(
-            children: <Widget>[
-              SizedBox(height: mediaQuery.size.height * 0.83),
-              // Botão que manda o usuario da tela de pergunta para tela
-              // com opções de resposta
-              GestureDetector(
-                onTap: () => Modular.to.navigate('./AnswerOptions'),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: mediaQuery.size.height * 0.11,
-                      width: mediaQuery.size.width * 0.55,
-                      child: Image.asset(
-                        'assets/images/answer-button.png',
-                        fit: BoxFit.fill,
-                      ),
+          BlocBuilder<LevelBloc, AppState>(
+              // mudar estado entre botao e dicas
+              bloc: levelBloc,
+              builder: (context, state) {
+                // Botão que manda o usuario da tela de pergunta para tela
+                // com opções de resposta
+                bool expandedQuestion;
+                
+                if (levelBloc.isTimeActive == false){
+                  expandedQuestion = false;
+                } else {
+                  expandedQuestion = true;
+                }
+
+                if (expandedQuestion == false) {
+                  return GestureDetector(
+                    onTap: () => {
+                      Modular.to.navigate('./AnswerOptions'),
+                      levelBloc.isTimeActive = false
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        SizedBox(height: mediaQuery.size.height * 0.85),
+                        Container(
+                          height: mediaQuery.size.height * 0.11,
+                          width: mediaQuery.size.width * 0.55,
+                          margin: EdgeInsets.only(
+                              left: mediaQuery.size.width * 0.2),
+                          child: Image.asset(
+                            'assets/images/answer-button.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+                  );
+                } else {
+                  return Column(children: [
+                    SizedBox(height: mediaQuery.size.height * 0.73),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Modular.to.navigate('./AnswerOptions');
+                            levelBloc.isTimeActive = false;
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(width: mediaQuery.size.width * 0.14),
+                              Container(
+                                // color: Colors.amber,
+                                margin: EdgeInsets.only(
+                                    left: mediaQuery.size.width * 0.58,
+                                    bottom: mediaQuery.size.width * 0.07),
+                                height: mediaQuery.size.height * 0.08,
+                                width: mediaQuery.size.width * 0.16,
+                                child: Image.asset(
+                                  'assets/images/button-close.png',
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        // Botão dica
+                        buttonTip(mediaQuery),
+
+                        // Botão pular
+                        buttonSkip(mediaQuery),
+
+                        // Botão adicionar tempo
+                        buttonMoreTime(mediaQuery),
+
+                        // Botão eliminar item
+                        buttonDelete(mediaQuery),
+                      ],
+                    ),
+                  ]);
+                }
+              }),
+
           // Mostra o texto da pergunta
           BlocBuilder<LevelBloc, AppState>(
               bloc: levelBloc,
@@ -237,6 +387,22 @@ class _QuestionPageState extends State<QuestionPage> {
                             ),
                           ),
                           // 4° dado, timer vazio na pergunta
+
+                          Container(
+                            width: mediaQuery.size.width * 0.12,
+                            height: mediaQuery.size.height * 0.02,
+                            padding: EdgeInsets.only(
+                                left: mediaQuery.size.width * 0.06),
+                            margin: EdgeInsets.only(
+                                left: mediaQuery.size.width * 0.12),
+                            child: Text(
+                              levelBloc.timerToAnswer.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -244,6 +410,94 @@ class _QuestionPageState extends State<QuestionPage> {
                 },
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buttonTip(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      onTap: () {
+        levelBloc.isTimeActive = false;
+      }, // TODO(YuriOliv): Criar função de dica
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.07),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-tip.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buttonSkip(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para pular pergunta
+      onTap: () {
+        levelBloc.isTimeActive = false;
+      },
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-skip.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buttonMoreTime(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para adicionar tempo
+      // no contador
+      onTap: () {
+        levelBloc.isTimeActive = false;
+      },
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-more-time.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buttonDelete(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      // TODO(YuriOliv): Criar função para eliminar item
+      onTap: () {
+        levelBloc.isTimeActive = false;
+      },
+      child: Row(
+        children: [
+          SizedBox(width: mediaQuery.size.width * 0.05),
+          SizedBox(
+            height: mediaQuery.size.height * 0.10,
+            width: mediaQuery.size.width * 0.18,
+            child: Image.asset(
+              'assets/images/help-button-delete.png',
+              fit: BoxFit.fill,
+            ),
           ),
         ],
       ),

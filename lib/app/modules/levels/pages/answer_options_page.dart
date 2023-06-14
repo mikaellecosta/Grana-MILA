@@ -34,19 +34,24 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     _levelBloc.optionSelected = -1;
 
     // Timer ate a resposta ser dada como errada e passar para a proxima
-    _timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!_levelBloc.isAnswerOptionSelected) {
-        if (_levelBloc.timerToAnswer > 0) {
+    timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!levelBloc.isAnswerOptionSelected) {
+        if (levelBloc.isTimeActive == true){
+              timer?.cancel();
+    timerToAnswerQuestion?.cancel();
+            }
+        else if  (levelBloc.timerToAnswer > 0) {
           if (!_isTimeStop) {
             _levelBloc.add(const ReduceTimer());
           }
-        } else {
+        } 
+            
+        else {
           // É necessario para o timerToAnswerQuestion
           _timerToAnswerQuestion?.cancel();
           // Função que verifica o acerto da questão e adiciona as moedas
           // Colocar aqui pois ela é necessaria para passar de questão
           _levelBloc.add(const CorrectQuestionCoinsIncrease());
-
           // Inicia um timer para passar para proxima tela
           // Passa para a proxima questão, até o fim da quantidade de
           // questões do level
@@ -143,7 +148,12 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
             children: <Widget>[
               SizedBox(height: mediaQuery.size.height * 0.15),
               // Fundo para mostrar a pergunta
-              _questionBox(mediaQuery),
+              GestureDetector(
+                  onTap: () {
+                    Modular.to.navigate('./Question');
+                    levelBloc.isTimeActive = true;
+                  },
+                  child: questionBox(mediaQuery)),
 
               // Fundo da opção de resposta 1
               BlocBuilder(
@@ -279,7 +289,6 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                   ],
                 );
               }),
-
           // Este BlocBuilder devolve o texto da pergunta e o texto "acertou"
           // ou "errou" dependendo da escolha de opção de resposta do usuario
           BlocBuilder<LevelBloc, AppState>(
@@ -666,7 +675,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
       ),
     );
   }
-
+  
   // Botão de adicinar 15 segundos no tempo de resposta
   Widget _moreTimeButton(MediaQueryData mediaQuery) {
     return GestureDetector(
