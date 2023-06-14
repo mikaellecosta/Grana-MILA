@@ -27,3 +27,8 @@ class UpdatingUserData implements ProcessingState {}
 class SuccessfullyUpdatedUserData implements SuccessState {}
 
 class UnableToUpdateUserData implements ErrorState {}
+
+// Estados para comprar o produto
+class BuyingProduct implements ProcessingState {}
+class SuccessBuyingProduct implements SuccessState {}
+class UnableToBuyProduct implements ErrorState {}

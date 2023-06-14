@@ -24,22 +24,8 @@ class AboutPage extends StatelessWidget {
               SizedBox(
                 height: mediaQuery.size.height * 0.07,
               ),
-              // Botão "sobre"
-              Row(
-                children: [
-                  SizedBox(
-                    width: mediaQuery.size.width * 0.06,
-                  ),
-                  SizedBox(
-                    height: mediaQuery.size.height * 0.11,
-                    width: mediaQuery.size.width * 0.58,
-                    child: Image.asset(
-                      'assets/images/button-about.png',
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ],
-              ),
+              // logo "sobre" no topo da tela
+              _logoAbout(mediaQuery),
             ],
           ),
           Column(
@@ -48,30 +34,52 @@ class AboutPage extends StatelessWidget {
                 height: mediaQuery.size.height * 0.02,
               ),
               // Botão para fechar view "sobre"
-              GestureDetector(
-                onTap: () => Modular.to.navigate('/'),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: mediaQuery.size.width * 0.80,
-                    ),
-                    SizedBox(
-                      height: mediaQuery.size.height * 0.08,
-                      width: mediaQuery.size.width * 0.16,
-                      child: Image.asset(
-                        'assets/images/button-close.png',
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _exitButton(mediaQuery),
             ],
           ),
           // Texto falando sobre o projeto Grana e equipe
           AboutTeamText(mediaQuery: mediaQuery),
         ],
       ),
+    );
+  }
+
+  _exitButton(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      onTap: () => Modular.to.navigate('/'),
+      child: Row(
+        children: [
+          SizedBox(
+            width: mediaQuery.size.width * 0.80,
+          ),
+          SizedBox(
+            height: mediaQuery.size.height * 0.08,
+            width: mediaQuery.size.width * 0.16,
+            child: Image.asset(
+              'assets/images/button-close.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _logoAbout(MediaQueryData mediaQuery) {
+    return Row(
+      children: [
+        SizedBox(
+          width: mediaQuery.size.width * 0.06,
+        ),
+        SizedBox(
+          height: mediaQuery.size.height * 0.11,
+          width: mediaQuery.size.width * 0.58,
+          child: Image.asset(
+            'assets/images/button-about.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ],
     );
   }
 }

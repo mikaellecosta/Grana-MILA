@@ -3,26 +3,25 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 
 class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
   LevelClosingWithEarnedCoinsPage({super.key});
 
-  final levelBloc = Modular.get<LevelBloc>();
-  final userDataBloc = Modular.get<UserDataBloc>();
+  final _levelBloc = Modular.get<LevelBloc>();
+  final _userDataBloc = Modular.get<UserDataBloc>();
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
     // Soma as moedas do usuario com as moedas ganhas no level
-    userDataBloc.userData.coins =
-        userDataBloc.userData.coins + levelBloc.levelCoins;
+    _userDataBloc.userData.coins =
+        _userDataBloc.userData.coins + _levelBloc.levelCoins;
 
     // Armazena os dados localmente com Hive
-    userDataBloc.add(const UpdateUserData());
+    _userDataBloc.add(const UpdateUserData());
 
     // Dialogo de alerta para sair da pagina
     // Como a função showDialog não pode ser chamada diretamente no Stack,
@@ -58,8 +57,9 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                     child: Text(
                       BrazilianPortuguese().attention,
                       textAlign: TextAlign.center,
-                      style: AppTypography.font24Bold()
-                      ),
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w900),
+                    ),
                   ),
                 ],
               ),
@@ -79,7 +79,8 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                       child: Text(
                         BrazilianPortuguese().storeCoins,
                         textAlign: TextAlign.center,
-                        style: AppTypography.font22Bold(),
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -133,12 +134,13 @@ class LevelClosingWithEarnedCoinsPage extends StatelessWidget {
                     ),
                     Container(
                       alignment: Alignment.center,
-                      child:  Material(
+                      child: Material(
                         color: Colors.transparent,
                         child: Text(
-                          'OK',
-                          style: AppTypography.font20Bold(),
-                          )
+                          BrazilianPortuguese().ok,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w900),
+                        ),
                       ),
                     ),
                   ],

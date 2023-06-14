@@ -10,6 +10,7 @@ class ShopBloc extends Bloc<ShopEvent, AppState> {
     on<CreateProductListInShopBloc>(_createProductListInShopBloc);
     on<NextProductInProductList>(_nextProductInProductList);
     on<PreviousProductInProductList>(_previousProductInProductList);
+    // on<buyProduct>(_buyProduct);
   }
 
   late List<Product> productList;

@@ -10,6 +10,7 @@ class UserDataBloc extends Bloc<UserDataEvent, AppState> {
     on<CreateNewUserData>(_createNewUserData);
     on<ReadUserData>(_readUserData);
     on<UpdateUserData>(_updateUserData);
+    on<BuyProduct>(_buyProduct);
   }
 
   bool isSaved = true;
@@ -49,7 +50,7 @@ class UserDataBloc extends Bloc<UserDataEvent, AppState> {
         coins: 0,
         completedLevels: 0,
         productsPurchased: [],
-        skin: '',
+        skin: event.skin,
         levelsPlayed: {},
         actualLevel: 1,
       );
@@ -92,6 +93,21 @@ class UserDataBloc extends Bloc<UserDataEvent, AppState> {
       emit(SuccessfullyUpdatedUserData());
     } catch (e) {
       emit(UnableToUpdateUserData());
+    }
+  }
+
+  Future<void> _buyProduct(
+    event,
+    Emitter<AppState> emit,
+  ) async {
+    emit(BuyingProduct());
+
+    try {
+      userData.coins = userData.coins - event.product.value as int;
+      userData.productsPurchased.add(event.product.name);
+      emit(SuccessBuyingProduct());
+    } catch (exception) {
+      emit(UnableToBuyProduct());
     }
   }
 }

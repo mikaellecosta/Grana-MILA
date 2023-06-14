@@ -13,6 +13,8 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
     on<UpdateActualQuestion>(_onUpdateActualQuestion);
     on<CorrectQuestionCoinsIncrease>(_correctQuestionCoinsIncrease);
     on<ReduceTimer>(_reduceTimer);
+    on<EliminateAnswerOption>(_eliminateAnswerOption);
+    on<SkipQuestion>(_skipQuestion);
   }
 
   // Variaveis para controlar o level
@@ -29,11 +31,19 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
   List<int> orderAnswers = [];
   int auxQuestionNumber = 0;
 
+  // Variaveis para eliminar opções de respostas
+  int auxAnswerNumber = 0;
+  List<int> eliminatedAnswers = [];
+
+  // Variaveis para saber se questão anterior foi pulada
+  bool isPreviousQuestionSkipped = false;
+
   // Variaveis de tempo maximo para responder
   int timerToAnswer = 60;
   bool isTimeActive = false;
 
   // Variaveis para modificar os dados do usuario no final do level
+  int answeredQuestions = 0;
   int correctQuestions = 0;
   bool isActualQuestionMoneyAlreadyIncreased = false;
   int levelCoins = 0;
@@ -72,8 +82,10 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
     emit(UpdatingIsAnswerOptionSelected());
 
     try {
+      answeredQuestions += 1;
       isAnswerOptionSelected = true;
       optionSelected = event.numberQuestion;
+      isPreviousQuestionSkipped = false;
       emit(SuccessfullyUpdateIsAnswerOptionSelected());
     } catch (exception) {
       emit(UnableToUpdateIsAnswerOptionSelected());
@@ -88,13 +100,12 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
     emit(UpdatingActualQuestion());
 
     try {
-      timerToAnswer = 60;
+      timerToAnswer = 61;
       isActualQuestionMoneyAlreadyIncreased = false;
       isAnswerOptionSelected = false;
       actualQuestion = orderQuestions[auxQuestionNumber];
       // Cria uma nova ordem de respostas
       orderAnswers.shuffle();
-
       emit(SuccessfullyUpdateActualQuestion());
     } catch (exception) {
       emit(UnableToUpdateIsAnswerOptionSelected());
@@ -113,7 +124,7 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
       // é adicionado 1 ao numero de respostas corretas do usuario
       if (!isActualQuestionMoneyAlreadyIncreased &&
           optionSelected == level.questions[actualQuestion].answerIndex) {
-        correctQuestions = correctQuestions + 1;
+        correctQuestions += 1;
         levelCoins = levelCoins + 200;
       }
       auxQuestionNumber = auxQuestionNumber + 1;
@@ -136,6 +147,38 @@ class LevelBloc extends Bloc<LevelEvent, AppState> {
       emit(SuccessfullyReduceTimer());
     } catch (exception) {
       emit(UnableToReduceTimer());
+    }
+  }
+
+  Future<void> _eliminateAnswerOption(
+    EliminateAnswerOption event,
+    Emitter<AppState> emit,
+  ) async {
+    emit(EliminatingAnswerOption());
+    try {
+      while (orderAnswers[auxAnswerNumber] ==
+          level.questions[actualQuestion].answerIndex) {
+        auxAnswerNumber += 1;
+      }
+      eliminatedAnswers.add(auxAnswerNumber);
+      auxAnswerNumber += 1;
+      emit(SucessfullyEliminateAnswerOption());
+    } catch (exception) {
+      emit(UnableToEliminateAnswerOption());
+    }
+  }
+
+  Future<void> _skipQuestion(
+    SkipQuestion event,
+    Emitter<AppState> emit,
+  ) async {
+    emit(SkippingQuestion());
+    try {
+      isPreviousQuestionSkipped = true;
+
+      emit(SucessfullySkipQuestion());
+    } catch (exception) {
+      emit(UnableToSkipQuestion());
     }
   }
 }

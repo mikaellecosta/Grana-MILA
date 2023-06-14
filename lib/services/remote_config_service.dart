@@ -12,8 +12,6 @@ class RemoteConfigService {
     await _remoteConfig.fetchAndActivate();
   }
 
-  // TODO(YuriOliv): fazer com que atualizar()
-  //  so ocorra caso o tempo de minimunFetchInterval tenha passado
   Future<void> inicializar() async {
     await _remoteConfig.setConfigSettings(
       RemoteConfigSettings(
@@ -87,6 +85,7 @@ class RemoteConfigService {
         question: question['question'],
         answerIndex: question['rightAnswer'],
         answers: answers,
+        tip: question['tip'],
       ));
     }
     return listQuestions;

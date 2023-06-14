@@ -32,80 +32,87 @@ class _AnswerOptionButtonState extends State<AnswerOptionButton> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LevelBloc, AppState>(
-        bloc: levelBloc,
-        builder: (context, state) {
-          if (state is UpdatingIsAnswerOptionSelected ||
-              state is InitialState) {
-            return const SizedBox();
-          }
-
-          // Cria um botão alinhado no meio da tela
-          //
-          // Retorna todos os fundos de botões em branco caso
-          // o usuario não tenha clicado em nenhuma das respostas
-          if (!levelBloc.isAnswerOptionSelected) {
-            return CenteredImageButtonWithText(
-              mediaQuery: widget.mediaQuery,
-              verticalSize: widget.verticalSize,
-              horizontalSize: widget.horizontalSize,
-              localImagem: 'assets/images/white-answer-item-button.png',
-              onTap: () {
-                levelBloc.add(
-                  UpdateIsAnswerOptionSelectedInLevelBloc(
-                      numberQuestion: widget.actualAnswerOptionNumber),
-                );
-              },
-              text: levelBloc.level.questions[levelBloc.actualQuestion]
-                  .answers[widget.actualAnswerOptionNumber],
-            );
-            // Retorna diferentes fundos caso o usuario
-            // tenha clicado em um botao de resposta
-          } else if (levelBloc.isAnswerOptionSelected) {
-            // Retorna um fundo vermelho na opção de resposta selecionada
-            // caso o item que o usuario selecionou foi uma resposta errada
-            if (widget.correctAnswerOptionNumber !=
-                    widget.actualAnswerOptionNumber &&
-                widget.actualAnswerOptionNumber == levelBloc.optionSelected) {
-              return CenteredImageButtonWithText(
-                mediaQuery: widget.mediaQuery,
-                verticalSize: widget.verticalSize,
-                horizontalSize: widget.horizontalSize,
-                localImagem: 'assets/images/red-answer-item-button.png',
-                onTap: () {},
-                text: levelBloc.level.questions[levelBloc.actualQuestion]
-                    .answers[widget.actualAnswerOptionNumber],
-              );
-            } else if (widget.correctAnswerOptionNumber ==
-                widget.actualAnswerOptionNumber) {
-              // Retorna um fundo verde na opção de resposta correta
-              // sempre que o usuario clicar em alguma opção de resposta
-              return CenteredImageButtonWithText(
-                mediaQuery: widget.mediaQuery,
-                verticalSize: widget.verticalSize,
-                horizontalSize: widget.horizontalSize,
-                localImagem: 'assets/images/green-answer-item-button.png',
-                onTap: () {},
-                text: levelBloc.level.questions[levelBloc.actualQuestion]
-                    .answers[widget.actualAnswerOptionNumber],
-              );
-            } else {
-              // Retorna um fundo branco caso o item não seja selecionado
-              // e não seja a resposta correta
+    return Visibility(
+      visible: !levelBloc.eliminatedAnswers.contains(
+        levelBloc.orderAnswers.indexOf(widget.actualAnswerOptionNumber)),
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
+      child: BlocBuilder<LevelBloc, AppState>(
+          bloc: levelBloc,
+          builder: (context, state) {
+            if (state is UpdatingIsAnswerOptionSelected ||
+                state is InitialState) {
+              return const SizedBox();
+            }
+    
+            // Cria um botão alinhado no meio da tela
+            //
+            // Retorna todos os fundos de botões em branco caso
+            // o usuario não tenha clicado em nenhuma das respostas
+            if (!levelBloc.isAnswerOptionSelected) {
               return CenteredImageButtonWithText(
                 mediaQuery: widget.mediaQuery,
                 verticalSize: widget.verticalSize,
                 horizontalSize: widget.horizontalSize,
                 localImagem: 'assets/images/white-answer-item-button.png',
-                onTap: () {},
+                onTap: () {
+                  levelBloc.add(
+                    UpdateIsAnswerOptionSelectedInLevelBloc(
+                        numberQuestion: widget.actualAnswerOptionNumber),
+                  );
+                },
                 text: levelBloc.level.questions[levelBloc.actualQuestion]
                     .answers[widget.actualAnswerOptionNumber],
               );
-            }
-          } // Se a mensagem abaixo aparecer é um erro do programa
-          return const SizedBox(
-            child: Text('Error'),
-          );
-        });
+              // Retorna diferentes fundos caso o usuario
+              // tenha clicado em um botao de resposta
+            } else if (levelBloc.isAnswerOptionSelected) {
+              // Retorna um fundo vermelho na opção de resposta selecionada
+              // caso o item que o usuario selecionou foi uma resposta errada
+              if (widget.correctAnswerOptionNumber !=
+                      widget.actualAnswerOptionNumber &&
+                  widget.actualAnswerOptionNumber == levelBloc.optionSelected) {
+                return CenteredImageButtonWithText(
+                  mediaQuery: widget.mediaQuery,
+                  verticalSize: widget.verticalSize,
+                  horizontalSize: widget.horizontalSize,
+                  localImagem: 'assets/images/red-answer-item-button.png',
+                  onTap: () {},
+                  text: levelBloc.level.questions[levelBloc.actualQuestion]
+                      .answers[widget.actualAnswerOptionNumber],
+                );
+              } else if (widget.correctAnswerOptionNumber ==
+                  widget.actualAnswerOptionNumber) {
+                // Retorna um fundo verde na opção de resposta correta
+                // sempre que o usuario clicar em alguma opção de resposta
+                return CenteredImageButtonWithText(
+                  mediaQuery: widget.mediaQuery,
+                  verticalSize: widget.verticalSize,
+                  horizontalSize: widget.horizontalSize,
+                  localImagem: 'assets/images/green-answer-item-button.png',
+                  onTap: () {},
+                  text: levelBloc.level.questions[levelBloc.actualQuestion]
+                      .answers[widget.actualAnswerOptionNumber],
+                );
+              } else {
+                // Retorna um fundo branco caso o item não seja selecionado
+                // e não seja a resposta correta
+                return CenteredImageButtonWithText(
+                  mediaQuery: widget.mediaQuery,
+                  verticalSize: widget.verticalSize,
+                  horizontalSize: widget.horizontalSize,
+                  localImagem: 'assets/images/white-answer-item-button.png',
+                  onTap: () {},
+                  text: levelBloc.level.questions[levelBloc.actualQuestion]
+                      .answers[widget.actualAnswerOptionNumber],
+                );
+              }
+            } // Se a mensagem abaixo aparecer é um erro do programa
+            return const SizedBox(
+              child: Text('Error'),
+            );
+          }),
+    );
   }
 }

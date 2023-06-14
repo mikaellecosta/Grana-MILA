@@ -5,9 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
-import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_events.dart';
@@ -22,17 +20,19 @@ class AnswerOptionsPage extends StatefulWidget {
 }
 
 class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
-  final levelBloc = Modular.get<LevelBloc>();
-  final userDataBloc = Modular.get<UserDataBloc>();
+  final _levelBloc = Modular.get<LevelBloc>();
+  final _userDataBloc = Modular.get<UserDataBloc>();
 
-  Timer? timer;
-  Timer? timerToAnswerQuestion;
+  Timer? _timer;
+  Timer? _timerToAnswerQuestion;
+  bool _isTimeStop = false;
+
+  bool _alreadyTapOnButtonTip = false;
 
   @override
   void initState() {
-    levelBloc.optionSelected = -1;
+    _levelBloc.optionSelected = -1;
 
-    // TODO(YuriOliv): Resolver bug no Timer ao minimizar e voltar.
     // Timer ate a resposta ser dada como errada e passar para a proxima
     timerToAnswerQuestion = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!levelBloc.isAnswerOptionSelected) {
@@ -41,40 +41,38 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     timerToAnswerQuestion?.cancel();
             }
         else if  (levelBloc.timerToAnswer > 0) {
-          levelBloc.add(const ReduceTimer());
+          if (!_isTimeStop) {
+            _levelBloc.add(const ReduceTimer());
+          }
         } 
             
         else {
           // É necessario para o timerToAnswerQuestion
-          timerToAnswerQuestion?.cancel();
+          _timerToAnswerQuestion?.cancel();
           // Função que verifica o acerto da questão e adiciona as moedas
           // Colocar aqui pois ela é necessaria para passar de questão
-          levelBloc.add(const CorrectQuestionCoinsIncrease());
-            
+          _levelBloc.add(const CorrectQuestionCoinsIncrease());
           // Inicia um timer para passar para proxima tela
           // Passa para a proxima questão, até o fim da quantidade de
           // questões do level
-          if (levelBloc.auxQuestionNumber <
-              levelBloc.level.questionsToComplete - 1) {
-            timer = Timer(const Duration(seconds: 1), () {
+          if (_levelBloc.answeredQuestions <
+              _levelBloc.level.questionsToComplete - 1) {
+            _timer = Timer(const Duration(seconds: 1), () {
               Modular.to.navigate('./Question');
             });
           }
           // Se o usuario ja tiver completado esse level antes,
           // Ele é mandado para o menu de leveis
-          else if (userDataBloc.userData.completedLevels >=
-              levelBloc.level.number) {
-            // somar as moedas ganhas do usuario e leva-lo para o menu de leveis
-            timer = Timer(const Duration(seconds: 1), () {
-              userDataBloc.userData.coins =
-                  userDataBloc.userData.coins + levelBloc.levelCoins;
-              userDataBloc.add(const UpdateUserData());
+          else if (_userDataBloc.userData.completedLevels >=
+              _levelBloc.level.number) {
+            // leva-lo para o menu de leveis
+            _timer = Timer(const Duration(seconds: 1), () {
               Modular.to.navigate('../');
             });
           } // Se o usuario não tiver completado esse level antes,
           // Ele é levado para a tela de premiação
           else {
-            timer = Timer(const Duration(seconds: 1), () {
+            _timer = Timer(const Duration(seconds: 1), () {
               Modular.to.navigate('./Reward');
             });
           }
@@ -90,12 +88,13 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                 // Widget com o texto
                 Material(
                   color: Colors.transparent,
-                  // TODO(YuriOliv): no momento está como um texto,
-                  //  mas acho que é uma imagem, fora isso o texto
-                  //  parece ficar muito escuro, verificar
                   child: Text(
                     BrazilianPortuguese().timeOver,
-                    style: AppTypography.font28BoldColor(),
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 255, 0, 0),
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 // Passa para a proxima questão
@@ -112,8 +111,8 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
   @override
   void dispose() {
     super.dispose();
-    timer?.cancel();
-    timerToAnswerQuestion?.cancel();
+    _timer?.cancel();
+    _timerToAnswerQuestion?.cancel();
   }
 
   @override
@@ -136,14 +135,14 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
               Row(
                 children: [
                   SizedBox(width: mediaQuery.size.width * 0.07),
-                  boxMenu(mediaQuery),
+                  _boxMenu(mediaQuery),
+                  SizedBox(width: mediaQuery.size.width * 0.14),
                   // Botão "fechar", fecha a FaseView e volta para a GameView
-                  buttonClose(mediaQuery),
+                  _closeButton(mediaQuery),
                 ],
               ),
             ],
           ),
-          // TODO(YuriOliv): Zoom ao clicar na pergunta
           // Column do fundo para mostrar a pergunta
           Column(
             children: <Widget>[
@@ -157,76 +156,143 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                   child: questionBox(mediaQuery)),
 
               // Fundo da opção de resposta 1
-              AnswerOptionButton(
-                mediaQuery: mediaQuery,
-                verticalSize: 0.09,
-                horizontalSize: 0.82,
-                correctAnswerOptionNumber: levelBloc
-                    .level.questions[levelBloc.actualQuestion].answerIndex,
-                actualAnswerOptionNumber: levelBloc.orderAnswers[0],
-              ),
-              // Espaço entre opções de resposta
-              SizedBox(height: mediaQuery.size.height * 0.01),
-              // Fundo da opção de resposta 2
-              AnswerOptionButton(
-                mediaQuery: mediaQuery,
-                verticalSize: 0.09,
-                horizontalSize: 0.82,
-                correctAnswerOptionNumber: levelBloc
-                    .level.questions[levelBloc.actualQuestion].answerIndex,
-                actualAnswerOptionNumber: levelBloc.orderAnswers[1],
-              ),
-              // Espaço entre opções de resposta
-              SizedBox(height: mediaQuery.size.height * 0.01),
-              // Fundo da opção de resposta 3
-              AnswerOptionButton(
-                mediaQuery: mediaQuery,
-                verticalSize: 0.09,
-                horizontalSize: 0.82,
-                correctAnswerOptionNumber: levelBloc
-                    .level.questions[levelBloc.actualQuestion].answerIndex,
-                actualAnswerOptionNumber: levelBloc.orderAnswers[2],
-              ),
-              // Espaço entre opções de resposta
-              SizedBox(height: mediaQuery.size.height * 0.01),
-              // Fundo da opção de resposta 4
-              AnswerOptionButton(
-                mediaQuery: mediaQuery,
-                verticalSize: 0.09,
-                horizontalSize: 0.82,
-                correctAnswerOptionNumber: levelBloc
-                    .level.questions[levelBloc.actualQuestion].answerIndex,
-                actualAnswerOptionNumber: levelBloc.orderAnswers[3],
-              ),
+              BlocBuilder(
+                  bloc: _levelBloc,
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        AnswerOptionButton(
+                          mediaQuery: mediaQuery,
+                          verticalSize: 0.09,
+                          horizontalSize: 0.82,
+                          correctAnswerOptionNumber: _levelBloc.level
+                              .questions[_levelBloc.actualQuestion].answerIndex,
+                          actualAnswerOptionNumber: _levelBloc.orderAnswers[0],
+                        ),
+                        // Espaço entre opções de resposta
+                        SizedBox(height: mediaQuery.size.height * 0.01),
+                        // Fundo da opção de resposta 2
+                        AnswerOptionButton(
+                          mediaQuery: mediaQuery,
+                          verticalSize: 0.09,
+                          horizontalSize: 0.82,
+                          correctAnswerOptionNumber: _levelBloc.level
+                              .questions[_levelBloc.actualQuestion].answerIndex,
+                          actualAnswerOptionNumber: _levelBloc.orderAnswers[1],
+                        ),
+                        // Espaço entre opções de resposta
+                        SizedBox(height: mediaQuery.size.height * 0.01),
+                        // Fundo da opção de resposta 3
+                        AnswerOptionButton(
+                          mediaQuery: mediaQuery,
+                          verticalSize: 0.09,
+                          horizontalSize: 0.82,
+                          correctAnswerOptionNumber: _levelBloc.level
+                              .questions[_levelBloc.actualQuestion].answerIndex,
+                          actualAnswerOptionNumber: _levelBloc.orderAnswers[2],
+                        ),
+                        // Espaço entre opções de resposta
+                        SizedBox(height: mediaQuery.size.height * 0.01),
+                        // Fundo da opção de resposta 4
+                        AnswerOptionButton(
+                          mediaQuery: mediaQuery,
+                          verticalSize: 0.09,
+                          horizontalSize: 0.82,
+                          correctAnswerOptionNumber: _levelBloc.level
+                              .questions[_levelBloc.actualQuestion].answerIndex,
+                          actualAnswerOptionNumber: _levelBloc.orderAnswers[3],
+                        ),
+                      ],
+                    );
+                  }),
             ],
           ),
           // Column de Botões de ajuda
-          //
-          // TODO(YuriOliv): Bloqueado caso não aja dinheiro suficiente (if's)
-          Column(
-            children: [
-              SizedBox(height: mediaQuery.size.height * 0.88),
-              Row(
-                children: [
-                  // Botão dica
-                  buttonTip(mediaQuery),
+          // Esse block atualiza os botões de ajuda para estados de habilitado
+          // e desabilitado
+          BlocBuilder<LevelBloc, AppState>(
+              bloc: _levelBloc,
+              builder: (context, state) {
+                final int levelCoins = _levelBloc.levelCoins;
+                final int bankCoins = _userDataBloc.userData.coins;
 
-                  // Botão pular
-                  buttonSkip(mediaQuery),
+                if (state is SucessfullySkipQuestion) {
+                  _levelBloc.add(const CorrectQuestionCoinsIncrease());
+                  Modular.to.navigate('./Question');
+                }
 
-                  // Botão adicionar tempo
-                  buttonMoreTime(mediaQuery),
-
-                  // Botão eliminar item
-                  buttonDelete(mediaQuery),
-                ],
-              ),
-            ],
-          ),
+                // Botões bloqueados se dinheiro menor que cinquenta
+                if (levelCoins < 50 && bankCoins < 50) {
+                  return Column(
+                    children: [
+                      SizedBox(height: mediaQuery.size.height * 0.88),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Botão dica
+                          _blocButton(
+                              mediaQuery, 'assets/images/help-button-tip'),
+                          // Botão pular
+                          _blocButton(
+                              mediaQuery, 'assets/images/help-button-skip'),
+                          // Botão adicionar tempo
+                          _blocButton(mediaQuery,
+                              'assets/images/help-button-more-time'),
+                          // Botão eliminar item
+                          _blocButton(
+                              mediaQuery, 'assets/images/help-button-delete'),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                // Botões de Dica e Pular bloqueados se dinheiro menor que cem
+                if (levelCoins < 100 && bankCoins < 100) {
+                  return Column(
+                    children: [
+                      SizedBox(height: mediaQuery.size.height * 0.88),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Botão dica
+                          _blocButton(
+                              mediaQuery, 'assets/images/help-button-tip'),
+                          // Botão pular
+                          _blocButton(
+                              mediaQuery, 'assets/images/help-button-skip'),
+                          // Botão adicionar tempo
+                          _moreTimeButton(mediaQuery),
+                          // Botão eliminar item
+                          _eliminateButton(mediaQuery),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                // Botões desbloqueados se dinheiro maior ou igual a 100
+                return Column(
+                  children: [
+                    SizedBox(height: mediaQuery.size.height * 0.88),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Botão dica
+                        _tipButton(mediaQuery),
+                        // Botão pular
+                        _skipButton(mediaQuery),
+                        // Botão adicionar tempo
+                        _moreTimeButton(mediaQuery),
+                        // Botão eliminar item
+                        _eliminateButton(mediaQuery),
+                      ],
+                    ),
+                  ],
+                );
+              }),
           // Este BlocBuilder devolve o texto da pergunta e o texto "acertou"
           // ou "errou" dependendo da escolha de opção de resposta do usuario
           BlocBuilder<LevelBloc, AppState>(
-              bloc: levelBloc,
+              bloc: _levelBloc,
               builder: (context, state) {
                 if (state is InitialState || state is UpdatingActualQuestion) {
                   return const SizedBox();
@@ -237,7 +303,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                 if (state is SuccessfullyUpdateIsAnswerOptionSelected) {
                   // Verifica se acertou a questão e adiciona as moedas ganhas
                   // Executada apenas uma vez
-                  levelBloc.add(const CorrectQuestionCoinsIncrease());
+                  _levelBloc.add(const CorrectQuestionCoinsIncrease());
                 }
 
                 // Verificadores condicionais para mudança de tela
@@ -245,34 +311,30 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                 if (state is SucessfullyIncreasedQuestionCoins) {
                   // Caso o usuario não tenha completado todas as
                   // questões do level
-                  if (levelBloc.auxQuestionNumber <
-                      levelBloc.level.questionsToComplete) {
-                    timer = Timer(const Duration(seconds: 3), () {
+                  if (_levelBloc.answeredQuestions <
+                      _levelBloc.level.questionsToComplete) {
+                    _timer = Timer(const Duration(seconds: 3), () {
                       Modular.to.navigate('./Question');
                     });
                   } // Caso o usuario ja tiver completado todas as questões
                   else {
                     // Para se o usuario ja tiver concluido este level antes
-                    if (userDataBloc.userData.completedLevels >=
-                        levelBloc.level.number) {
-                      // Espera 3 segundos para somar as moedas ganhas
-                      // E leva-lo para o menu de leveis
-                      timer = Timer(const Duration(seconds: 3), () {
-                        userDataBloc.userData.coins =
-                            userDataBloc.userData.coins + levelBloc.levelCoins;
-                        userDataBloc.add(const UpdateUserData());
+                    if (_userDataBloc.userData.completedLevels >=
+                        _levelBloc.level.number) {
+                      // Espera 3 segundos para leva-lo para o menu de leveis
+                      _timer = Timer(const Duration(seconds: 3), () {
                         Modular.to.navigate('../');
                       });
                     } // Se não acertar todas as questões ou não acertar nenhuma
-                    else if (levelBloc.correctQuestions == 0 ||
-                        levelBloc.correctQuestions <
-                            levelBloc.level.questionsToComplete) {
-                      timer = Timer(const Duration(seconds: 3), () {
+                    else if (_levelBloc.correctQuestions == 0 ||
+                        _levelBloc.correctQuestions <
+                            _levelBloc.level.questionsToComplete) {
+                      _timer = Timer(const Duration(seconds: 3), () {
                         Modular.to.navigate('./Reward');
                       });
                     } // Se usuario acertar todas as questões e passar de fase
                     else {
-                      timer = Timer(const Duration(seconds: 3), () {
+                      _timer = Timer(const Duration(seconds: 3), () {
                         Modular.to.navigate('./Congratulations');
                       });
                     }
@@ -296,17 +358,28 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                               width: mediaQuery.size.width * 0.7,
                               height: mediaQuery.size.height * 0.03,
                               child: Text(
-                                !levelBloc.isAnswerOptionSelected
+                                !_levelBloc.isAnswerOptionSelected
                                     ? ''
-                                    : levelBloc
+                                    : _levelBloc
                                                 .level
                                                 .questions[
-                                                    levelBloc.actualQuestion]
+                                                    _levelBloc.actualQuestion]
                                                 .answerIndex ==
-                                            levelBloc.optionSelected
+                                            _levelBloc.optionSelected
                                         ? BrazilianPortuguese().right
                                         : BrazilianPortuguese().wrong,
-                                style: AppTypography().font24BoldSelect(levelBloc),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  color: _levelBloc
+                                              .level
+                                              .questions[
+                                                  _levelBloc.actualQuestion]
+                                              .answerIndex ==
+                                          _levelBloc.optionSelected
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -326,16 +399,15 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   // Texto da pergunta atual,
-                                  // TODO(YuriOliv): criar função para adaptar o
-                                  //  tamanho do texto da pergunta? se o texto
-                                  //  for muito grande o resto da
-                                  //  pergunta não aparece
                                   Text(
-                                    levelBloc
+                                    _levelBloc
                                         .level
-                                        .questions[levelBloc.actualQuestion]
+                                        .questions[_levelBloc.actualQuestion]
                                         .question,
-                                    style: AppTypography.font16Bold(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -351,13 +423,13 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
           // Dados na parte superior da tela, necessario usar
           // dois BlocBuilder pois são utilizados dados de 2 blocs
           BlocBuilder<UserDataBloc, AppState>(
-            bloc: userDataBloc,
+            bloc: _userDataBloc,
             builder: (context, state1) {
               if (state1 is InitialState || state1 is UpdatingActualQuestion) {
                 return const SizedBox();
               }
               return BlocBuilder<LevelBloc, AppState>(
-                bloc: levelBloc,
+                bloc: _levelBloc,
                 builder: (context, state2) {
                   if (state2 is InitialState ||
                       state2 is UpdatingActualQuestion) {
@@ -376,8 +448,11 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             width: mediaQuery.size.width * 0.12,
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
-                              levelBloc.levelCoins.toString(),
-                              style: AppTypography.font14Bold(),
+                              _levelBloc.levelCoins.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                           // Espaço entre o widget e o lado esquerdo da tela
@@ -388,8 +463,11 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
                               BrazilianPortuguese()
-                                  .actualLevel(levelBloc.actualLevel),
-                              style: AppTypography.font14Bold(),
+                                  .actualLevel(_levelBloc.actualLevel),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
@@ -405,8 +483,11 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             width: mediaQuery.size.width * 0.12,
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
-                              userDataBloc.userData.coins.toString(),
-                              style: AppTypography.font14Bold(),
+                              _userDataBloc.userData.coins.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                           // Espaço entre o widget e o lado esquerdo da tela
@@ -417,8 +498,11 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
                             width: mediaQuery.size.width * 0.12,
                             height: mediaQuery.size.height * 0.02,
                             child: Text(
-                              levelBloc.timerToAnswer.toString(),
-                              style: AppTypography.font14Bold(),
+                              _levelBloc.timerToAnswer.toString(),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
@@ -434,7 +518,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     );
   }
 
-  Widget questionBox(MediaQueryData mediaQuery) {
+  Widget _questionBox(MediaQueryData mediaQuery) {
     return Row(
       children: [
         SizedBox(width: mediaQuery.size.width * 0.07),
@@ -450,7 +534,7 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     );
   }
 
-  Widget boxMenu(MediaQueryData mediaQuery) {
+  Widget _boxMenu(MediaQueryData mediaQuery) {
     return SizedBox(
       height: mediaQuery.size.height * 0.11,
       width: mediaQuery.size.width * 0.58,
@@ -461,24 +545,345 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     );
   }
 
-  Widget buttonClose(MediaQueryData mediaQuery) {
+  Widget _closeButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       // Caso o usuario ja tenha ganho alguma moeda
       // Sera avisado que suas moedas serão guardadas (tela)
       onTap: () {
-        levelBloc.levelCoins > 0
+        _levelBloc.levelCoins > 0
             ? Modular.to.navigate('./LevelClosingWithEarnedCoins')
             : Modular.to.navigate('../');
       },
-      child: Row(
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.08,
+        width: mediaQuery.size.width * 0.16,
+        child: Image.asset(
+          'assets/images/button-close.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+
+  // Botão de dica
+  Widget _tipButton(MediaQueryData mediaQuery) {
+    // Só é permitido uma dica por questão (botão bloqueia)
+    if (_alreadyTapOnButtonTip) {
+      return _blocButton(mediaQuery, 'assets/images/help-button-tip');
+    }
+
+    return GestureDetector(
+      onTap: () {
+        _isTimeStop = true;
+        // Se tiver conseguido dinheiro no questionario em andamento
+        if (_levelBloc.levelCoins >= 100) {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().tip,
+            informationText: BrazilianPortuguese().seeTip,
+            value: 100,
+            function: () {
+              _okDialogBox(
+                mediaQuery,
+                tittle: BrazilianPortuguese().tip,
+                informationText:
+                    _levelBloc.level.questions[_levelBloc.actualQuestion].tip,
+              );
+              _alreadyTapOnButtonTip = true;
+            },
+          );
+        }
+        // Se não, tirar do banco
+        else {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().attention,
+            informationText: BrazilianPortuguese().takeBankCoin,
+            value: 100,
+            function: () {
+              _okDialogBox(
+                mediaQuery,
+                tittle: BrazilianPortuguese().tip,
+                informationText:
+                    _levelBloc.level.questions[_levelBloc.actualQuestion].tip,
+              );
+              _alreadyTapOnButtonTip = true;
+            },
+          );
+        }
+      },
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.10,
+        width: mediaQuery.size.width * 0.18,
+        child: Image.asset(
+          'assets/images/help-button-tip.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+
+  // Botão de pular questão
+  Widget _skipButton(MediaQueryData mediaQuery) {
+    // Botão é bloqueado se tiver pulado a questão anterior
+    // ou for a última questão
+    if (_levelBloc.isPreviousQuestionSkipped ||
+        _levelBloc.auxQuestionNumber == _levelBloc.level.totalQuestions - 1) {
+      return _blocButton(mediaQuery, 'assets/images/help-button-skip');
+    }
+    return GestureDetector(
+      onTap: () {
+        _isTimeStop = true;
+        // Se tiver conseguido dinheiro no questionario em andamento
+        if (_levelBloc.levelCoins >= 100) {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().skip,
+            informationText: BrazilianPortuguese().skipQuestion,
+            value: 100,
+            function: () {
+              _isTimeStop = false;
+              // _levelBloc.isPreviousQuestionSkipped = true;
+              // _levelBloc.add(const CorrectQuestionCoinsIncrease());
+              _levelBloc.add(const SkipQuestion());
+            },
+          );
+        }
+        // Se não, tirar do banco
+        else {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().attention,
+            informationText: BrazilianPortuguese().takeBankCoin,
+            value: 100,
+            function: () {
+              _isTimeStop = false;
+              // _levelBloc.isPreviousQuestionSkipped = true;
+              // _levelBloc.add(const CorrectQuestionCoinsIncrease());
+              _levelBloc.add(const SkipQuestion());
+            },
+          );
+        }
+      },
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.10,
+        width: mediaQuery.size.width * 0.18,
+        child: Image.asset(
+          'assets/images/help-button-skip.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+  
+  // Botão de adicinar 15 segundos no tempo de resposta
+  Widget _moreTimeButton(MediaQueryData mediaQuery) {
+    return GestureDetector(
+      onTap: () {
+        _isTimeStop = true;
+        // Se tiver conseguido dinheiro no questionario em andamento
+        if (_levelBloc.levelCoins >= 50) {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().moreTime,
+            informationText: BrazilianPortuguese().moreFifteenSeconds,
+            value: 50,
+            function: () {
+              _isTimeStop = false;
+              _levelBloc.timerToAnswer += 15;
+            },
+          );
+        }
+        // Se não, tirar do banco
+        else {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().attention,
+            informationText: BrazilianPortuguese().takeBankCoin,
+            value: 50,
+            function: () {
+              _isTimeStop = false;
+              _levelBloc.timerToAnswer += 15;
+            },
+          );
+        }
+      },
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.10,
+        width: mediaQuery.size.width * 0.18,
+        child: Image.asset(
+          'assets/images/help-button-more-time.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+
+  // Botão para elimitar uma opção de resposta errada
+  Widget _eliminateButton(MediaQueryData mediaQuery) {
+    // Butão bloqueia se sobrar só uma opção de resposta
+    if (_levelBloc.level.totalQuestions ==
+        _levelBloc.eliminatedAnswers.length + 1) {
+      return _blocButton(mediaQuery, 'assets/images/help-button-delete');
+    }
+    return GestureDetector(
+      onTap: () {
+        _isTimeStop = true;
+        // Se tiver conseguido dinheiro no questionario em andamento
+        if (_levelBloc.levelCoins >= 50) {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().scissors,
+            informationText: BrazilianPortuguese().eliminateAnswer,
+            value: 50,
+            function: () {
+              _isTimeStop = false;
+              _levelBloc.add(const EliminateAnswerOption());
+            },
+          );
+        }
+        // Se não, tirar do banco
+        else {
+          _yesNoDialogBox(
+            mediaQuery,
+            tittle: BrazilianPortuguese().attention,
+            informationText: BrazilianPortuguese().takeBankCoin,
+            value: 50,
+            function: () {
+              _isTimeStop = false;
+              _levelBloc.add(const EliminateAnswerOption());
+            },
+          );
+        }
+      },
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.10,
+        width: mediaQuery.size.width * 0.18,
+        child: Image.asset(
+          'assets/images/help-button-delete.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+
+  // Botão de ajuda bloquedo
+  Widget _blocButton(MediaQueryData mediaQuery, String image) {
+    return GestureDetector(
+      onTap: () {
+        _isTimeStop = true;
+        _okDialogBox(
+          mediaQuery,
+          tittle: BrazilianPortuguese().alert,
+          informationText: BrazilianPortuguese().cantBuyHelp,
+        );
+      },
+      child: SizedBox(
+        height: mediaQuery.size.height * 0.10,
+        width: mediaQuery.size.width * 0.18,
+        child: Image.asset(
+          '$image-locked.png',
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+
+  // Popup com botão de OK
+  Future _okDialogBox(MediaQueryData mediaQuery,
+      {required String tittle, required String informationText}) {
+    return showDialog(
+      context: context,
+      builder: (context) => Stack(
+        children: <Widget>[
+          _whiteBoxForAlertDialog(mediaQuery),
+          _alertTittle(mediaQuery, tittle),
+          _alertInformation(mediaQuery, informationText),
+          _exitAlertOkButton(mediaQuery),
+        ],
+      ),
+    );
+  }
+
+  // Popup com botão de SIM e NÃO
+  Future _yesNoDialogBox(MediaQueryData mediaQuery,
+      {required String tittle,
+      required String informationText,
+      required int value,
+      required function}) {
+    return showDialog(
+      context: context,
+      builder: (context) => Stack(
+        children: <Widget>[
+          _whiteBoxForAlertDialog(mediaQuery),
+          _alertTittle(mediaQuery, tittle),
+          _alertInformation(mediaQuery, informationText),
+          _exitAlertYesNoButton(mediaQuery, value, function),
+        ],
+      ),
+    );
+  }
+
+  // Fundo do popup
+  Widget _whiteBoxForAlertDialog(MediaQueryData mediaQuery) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: mediaQuery.size.width * 0.03),
+          child: Image.asset('assets/images/white-box-background.png'),
+        ),
+      ],
+    );
+  }
+
+  // Titulo do popup
+  Widget _alertTittle(MediaQueryData mediaQuery, String tittle) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Column(children: [
+        SizedBox(
+          height: mediaQuery.size.height * 0.39,
+        ),
+        Material(
+            color: Colors.transparent,
+            child: Text(
+              tittle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+              ),
+            ))
+      ])
+    ]);
+  }
+
+  // Texto do popup
+  Widget _alertInformation(MediaQueryData mediaQuery, String informationText) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: mediaQuery.size.width * 0.1),
+      child: Column(
         children: [
-          SizedBox(width: mediaQuery.size.width * 0.14),
           SizedBox(
-            height: mediaQuery.size.height * 0.08,
-            width: mediaQuery.size.width * 0.16,
-            child: Image.asset(
-              'assets/images/button-close.png',
-              fit: BoxFit.fill,
+            height: mediaQuery.size.height * 0.47,
+          ),
+          Material(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                SizedBox(
+                  width: mediaQuery.size.width,
+                  child: Text(
+                    informationText,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -486,83 +891,86 @@ class _AnswerOptionsPageState extends State<AnswerOptionsPage> {
     );
   }
 
-  Widget buttonTip(MediaQueryData mediaQuery) {
-    return GestureDetector(
-      onTap: () {}, // TODO(YuriOliv): Criar função de dica
-      child: Row(
-        children: [
-          SizedBox(width: mediaQuery.size.width * 0.07),
-          SizedBox(
-            height: mediaQuery.size.height * 0.10,
-            width: mediaQuery.size.width * 0.18,
-            child: Image.asset(
-              'assets/images/help-button-tip.png',
-              fit: BoxFit.fill,
-            ),
-          ),
-        ],
-      ),
+  // Botão de OK do popup
+  Widget _exitAlertOkButton(MediaQueryData mediaQuery) {
+    return Column(
+      children: [
+        SizedBox(
+          height: mediaQuery.size.height * 0.58,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // Botão (OK)
+            GestureDetector(
+                onTap: () {
+                  _isTimeStop = false;
+                  Modular.to.pop();
+                },
+                child: _blueBox(mediaQuery, BrazilianPortuguese().ok)),
+          ],
+        )
+      ],
     );
   }
 
-  Widget buttonSkip(MediaQueryData mediaQuery) {
-    return GestureDetector(
-      // TODO(YuriOliv): Criar função para pular pergunta
-      onTap: () {},
-      child: Row(
-        children: [
-          SizedBox(width: mediaQuery.size.width * 0.05),
-          SizedBox(
-            height: mediaQuery.size.height * 0.10,
-            width: mediaQuery.size.width * 0.18,
-            child: Image.asset(
-              'assets/images/help-button-skip.png',
-              fit: BoxFit.fill,
+  // Botões de SIM e NÃO do popup
+  Widget _exitAlertYesNoButton(MediaQueryData mediaQuery, int value, function) {
+    return Column(
+      children: [
+        SizedBox(
+          height: mediaQuery.size.height * 0.58,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // Botão SIM
+            GestureDetector(
+                onTap: () {
+                  if (_levelBloc.levelCoins >= value) {
+                    _levelBloc.levelCoins -= value;
+                  } else {
+                    _userDataBloc.userData.coins -= value;
+                  }
+                  Modular.to.pop();
+                  function();
+                },
+                child: _blueBox(mediaQuery, BrazilianPortuguese().yes)),
+            SizedBox(
+              width: mediaQuery.size.width * 0.1,
             ),
-          ),
-        ],
-      ),
+            // Botão NÃO
+            GestureDetector(
+                onTap: () {
+                  _isTimeStop = false;
+                  Modular.to.pop();
+                },
+                child: _blueBox(mediaQuery, BrazilianPortuguese().no)),
+          ],
+        )
+      ],
     );
   }
 
-  Widget buttonMoreTime(MediaQueryData mediaQuery) {
-    return GestureDetector(
-      // TODO(YuriOliv): Criar função para adicionar tempo
-      // no contador
-      onTap: () {},
-      child: Row(
-        children: [
-          SizedBox(width: mediaQuery.size.width * 0.05),
-          SizedBox(
-            height: mediaQuery.size.height * 0.10,
-            width: mediaQuery.size.width * 0.18,
-            child: Image.asset(
-              'assets/images/help-button-more-time.png',
-              fit: BoxFit.fill,
+  Widget _blueBox(MediaQueryData mediaQuery, String text) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          height: mediaQuery.size.height * 0.06,
+          child: Image.asset('assets/images/blue-button-background.png'),
+        ),
+        Material(
+          color: Colors.transparent,
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget buttonDelete(MediaQueryData mediaQuery) {
-    return GestureDetector(
-      // TODO(YuriOliv): Criar função para eliminar item
-      onTap: () {},
-      child: Row(
-        children: [
-          SizedBox(width: mediaQuery.size.width * 0.05),
-          SizedBox(
-            height: mediaQuery.size.height * 0.10,
-            width: mediaQuery.size.width * 0.18,
-            child: Image.asset(
-              'assets/images/help-button-delete.png',
-              fit: BoxFit.fill,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

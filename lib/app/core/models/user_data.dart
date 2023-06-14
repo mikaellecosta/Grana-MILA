@@ -31,8 +31,6 @@ class UserData {
   // Path ate a imagem da skin do usuario, no caso menino ou menina
   String skin;
   // Map que armazena dados das tentativas de concluir um level do usuario
-  // TODO(YuriOliv): ajustar esse campo depois, pois eu não sei como seria feito
-  // ja que não sei os dados que seriam necessarios ao google analitycs
   Map<String, dynamic> levelsPlayed;
 
   int actualLevel;

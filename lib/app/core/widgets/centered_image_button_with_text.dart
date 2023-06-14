@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 
 class CenteredImageButtonWithText extends StatelessWidget {
 
@@ -10,6 +9,7 @@ class CenteredImageButtonWithText extends StatelessWidget {
     required this.horizontalSize,
     required this.localImagem,
     required this.text,
+    this.buttonTextFontSize = 16,
     required this.onTap,
   }) : super(key: key);
   final MediaQueryData mediaQuery;
@@ -18,6 +18,7 @@ class CenteredImageButtonWithText extends StatelessWidget {
   final String localImagem;
   final String text;
   final Function() onTap;
+  final double buttonTextFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,10 @@ class CenteredImageButtonWithText extends StatelessWidget {
                     child: Center(
                       child: Text(
                         text,
-                        style: AppTypography.font16Bold(),
+                        style: TextStyle(
+                          fontSize: buttonTextFontSize,
+                          fontWeight: FontWeight.w900,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),

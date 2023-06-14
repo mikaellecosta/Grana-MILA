@@ -29,8 +29,6 @@ Future main() async {
   if (!prefs.getBool('isDatabaseDownloaded')!) {
     InternetVerify().verifyToInitializeApp();
   } else {
-    // TODO(YuriOliv): apagar listener depois,
-    //  ele esta aqui apenas para aprendizado
     Modular.to.addListener(() {
       if (kDebugMode) {
         print(Modular.to.path);
