@@ -87,6 +87,7 @@ class RemoteConfigService {
         question: question['question'],
         answerIndex: question['rightAnswer'],
         answers: answers,
+        tip: question['tip'],
       ));
     }
     return listQuestions;

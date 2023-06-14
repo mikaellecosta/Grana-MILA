@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels_menu/widgets/treasure_button.dart';
 
@@ -13,15 +12,15 @@ class LevelsMenuPage extends StatefulWidget {
 }
 
 class _LevelsMenuPageState extends State<LevelsMenuPage> {
-  final userDataBloc = Modular.get<UserDataBloc>();
+  final _userDataBloc = Modular.get<UserDataBloc>();
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final String userSkin = userDataBloc.userData.skin;
+    final String userSkin = _userDataBloc.userData.skin;
     // Ao mudar essa variavel, os baus vão mudando de
     // imagem e sendo desbloqueados
-    final int levelsCompleted = userDataBloc.userData.completedLevels;
+    final int levelsCompleted = _userDataBloc.userData.completedLevels;
 
     // Retorna a tela em si, com uma imagem de fundo cobrindo toda a tela
     return Scaffold(
@@ -38,7 +37,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
                 height: mediaQuery.size.height * 0.06,
               ),
               // Botão "voltar", volta para a view de menu inicial
-              backButton(mediaQuery),
+              _backButton(mediaQuery),
             ],
           ),
           // Column da imagem mostrando o valor atual no banco do jogador
@@ -48,10 +47,10 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
                 height: mediaQuery.size.height * 0.05,
               ),
               // Imagem mostrando o valor atual no banco do jogador
-              coinBox(mediaQuery),
+              _coinBox(mediaQuery),
             ],
           ),
-          
+
           // Column do botão da fase 5
           TreasureButton(
               mediaQuery: mediaQuery,
@@ -99,7 +98,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
               levelsCompleted: levelsCompleted,
               thisLevel: 1),
           // skin do usuario
-          skin(mediaQuery),
+          _buildAvatar(mediaQuery, userSkin),
 
           // Column do botão que leva a view de loja
           Column(
@@ -108,7 +107,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
                 height: mediaQuery.size.height * 0.87,
               ),
               // Botão que leva a view de loja
-              storeButton(mediaQuery),
+              _storeButton(mediaQuery),
             ],
           ),
         ],
@@ -116,7 +115,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
     );
   }
 
-  Widget backButton(MediaQueryData mediaQuery) {
+  Widget _backButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       onTap: () => Modular.to.navigate('../'),
       child: Row(
@@ -137,7 +136,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
     );
   }
 
-  Widget storeButton(MediaQueryData mediaQuery) {
+  Widget _storeButton(MediaQueryData mediaQuery) {
     return GestureDetector(
       onTap: () => Modular.to.navigate('./Shop/'),
       child: Row(
@@ -158,7 +157,7 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
     );
   }
 
-  Widget coinBox(MediaQueryData mediaQuery) {
+  Widget _coinBox(MediaQueryData mediaQuery) {
     return Row(
       children: [
         SizedBox(
@@ -177,85 +176,44 @@ class _LevelsMenuPageState extends State<LevelsMenuPage> {
             fit: BoxFit.fill,
           )),
           child: Text(
-            '${userDataBloc.userData.coins}',
-            style: AppTypography.font28Bold(),
+            '${_userDataBloc.userData.coins}',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget skin(MediaQueryData mediaQuery) {
-    if (userDataBloc.userData.actualLevel == 1) {
-      return Container(
-          margin: EdgeInsets.only(
-              top: mediaQuery.size.height * 0.785,
-              left: mediaQuery.size.width * 0.2
-              ),
-          height: mediaQuery.size.height * 0.075,
-          width: mediaQuery.size.width * 0.15,
-          //TODO(YuriOliv): mudar para userSkin
-          child: Image.asset(
-            'assets/images/girl-avatar.png',
-            fit: BoxFit.fill,
-          )
-        );
-    } else if (userDataBloc.userData.actualLevel == 2) {
-      return Container(
-          margin: EdgeInsets.only(
-              top: mediaQuery.size.height * 0.718,
-              left: mediaQuery.size.width * 0.52
-              ),
-          height: mediaQuery.size.height * 0.075,
-          width: mediaQuery.size.width * 0.15,
-          //TODO(YuriOliv): mudar para userSkin
-          child: Image.asset(
-            'assets/images/girl-avatar.png',
-            fit: BoxFit.fill,
-          )
-        );
-    } else if (userDataBloc.userData.actualLevel == 3) {
-      return Container(
-          margin: EdgeInsets.only(
-            top: mediaQuery.size.height * 0.64,
-            left: mediaQuery.size.width * 0.68
-              ),
-          height: mediaQuery.size.height * 0.075,
-          width: mediaQuery.size.width * 0.15,
-          //TODO(YuriOliv): mudar para userSkin
-          child: Image.asset(
-            'assets/images/girl-avatar.png',
-            fit: BoxFit.fill,
-          )
-        );
-    } else if (userDataBloc.userData.actualLevel == 4) {
-      return Container(
-          margin: EdgeInsets.only(
-            top: mediaQuery.size.height * 0.57,
-            left: mediaQuery.size.width * 0.77
-              ),
-          height: mediaQuery.size.height * 0.075,
-          width: mediaQuery.size.width * 0.15,
-          //TODO(YuriOliv): mudar para userSkin
-          child: Image.asset(
-            'assets/images/girl-avatar.png',
-            fit: BoxFit.fill,
-          )
-        );
-    } else {
-      return Container(
-          margin: EdgeInsets.only(
-              top: mediaQuery.size.height * 0.555,
-            left: mediaQuery.size.width * 0.41
-              ),
-          height: mediaQuery.size.height * 0.075,
-          width: mediaQuery.size.width * 0.15,
-          //TODO(YuriOliv): mudar para userSkin
-          child: Image.asset(
-            'assets/images/girl-avatar.png',
-            fit: BoxFit.fill,
-          )
-        );
+  Widget _buildAvatar(MediaQueryData mediaQuery, String userSkin) {
+    switch (_userDataBloc.userData.actualLevel) {
+      case 1:
+        return _avatarContainer(0.785, 0.2, mediaQuery, userSkin);
+      case 2:
+        return _avatarContainer(0.718, 0.52, mediaQuery, userSkin);
+      case 3:
+        return _avatarContainer(0.64, 0.68, mediaQuery, userSkin);
+      case 4:
+        return _avatarContainer(0.57, 0.77, mediaQuery, userSkin);
+      case 5:
+        return _avatarContainer(0.555, 0.41, mediaQuery, userSkin);
     }
+    return const Text('Error');
+  }
+
+  Widget _avatarContainer(double percentMarginHeight, double percentMarginWidth,
+      MediaQueryData mediaQuery, String userSkin) {
+    return Container(
+        margin: EdgeInsets.only(
+            top: mediaQuery.size.height * percentMarginHeight,
+            left: mediaQuery.size.width * percentMarginWidth),
+        height: mediaQuery.size.height * 0.075,
+        width: mediaQuery.size.width * 0.15,
+        child: Image.asset(
+          userSkin,
+          fit: BoxFit.fill,
+        ));
   }
 }

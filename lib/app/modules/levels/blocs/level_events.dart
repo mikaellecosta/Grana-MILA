@@ -29,3 +29,12 @@ class ReduceTimer implements LevelEvent {
 class CorrectQuestionCoinsIncrease implements LevelEvent {
   const CorrectQuestionCoinsIncrease();
 }
+
+// Evento para eliminar opção de resposta
+class EliminateAnswerOption implements LevelEvent {
+  const EliminateAnswerOption();
+}
+
+class SkipQuestion implements LevelEvent {
+  const SkipQuestion();
+}

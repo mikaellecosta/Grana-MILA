@@ -3,7 +3,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/centered_image_button.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/centered_image_button_with_text.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
@@ -52,7 +51,8 @@ class RewardPage extends StatelessWidget {
                   width: mediaQuery.size.width * 0.7,
                   child: Text(
                     BrazilianPortuguese().unfortunately,
-                    style: AppTypography.font40Bold(),
+                    style: const TextStyle(
+                        fontSize: 40, fontWeight: FontWeight.w900),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -61,7 +61,8 @@ class RewardPage extends StatelessWidget {
                   width: mediaQuery.size.width * 0.58,
                   child: Text(
                     BrazilianPortuguese().tryAgain,
-                    style: AppTypography.font24Bold(),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -113,7 +114,11 @@ class RewardPage extends StatelessWidget {
                       child: Text(
                         BrazilianPortuguese()
                             .actualLevel(levelBloc.actualLevel),
-                        style: AppTypography.font24BoldColor(),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Color.fromARGB(255, 81, 1, 3),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -169,7 +174,8 @@ class RewardPage extends StatelessWidget {
                   width: mediaQuery.size.width * 0.7,
                   child: Text(
                     BrazilianPortuguese().congratulations,
-                    style: AppTypography.font40Bold(),
+                    style: const TextStyle(
+                        fontSize: 40, fontWeight: FontWeight.w900),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -180,7 +186,8 @@ class RewardPage extends StatelessWidget {
                   child: Text(
                     BrazilianPortuguese()
                         .rewardValue(levelBloc.correctQuestions),
-                    style: AppTypography.font20Bold(),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -226,7 +233,11 @@ class RewardPage extends StatelessWidget {
                             ),
                             Text(
                               BrazilianPortuguese().spare,
-                              style: AppTypography.font26BoldColor(),
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w900,
+                                color: Color.fromARGB(255, 81, 1, 3),
+                              ),
                             ),
                           ],
                         ),
@@ -263,7 +274,11 @@ class RewardPage extends StatelessWidget {
                       child: Text(
                         BrazilianPortuguese()
                             .actualLevel(levelBloc.actualLevel),
-                        style: AppTypography.font24BoldColor(),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Color.fromARGB(255, 81, 1, 3),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),

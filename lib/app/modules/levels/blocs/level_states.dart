@@ -34,3 +34,17 @@ class IncreasingQuestionCoins implements ProcessingState {}
 class SucessfullyIncreasedQuestionCoins implements SuccessState {}
 
 class UnableToIncreaseQuestionCoins implements ErrorState {}
+
+// estados para eliminar opção de resposta
+class EliminatingAnswerOption implements ProcessingState {}
+
+class SucessfullyEliminateAnswerOption implements SuccessState {}
+
+class UnableToEliminateAnswerOption implements ErrorState {}
+
+// estados para pular questão
+class SkippingQuestion implements ProcessingState {}
+
+class SucessfullySkipQuestion implements SuccessState {}
+
+class UnableToSkipQuestion implements ErrorState {}

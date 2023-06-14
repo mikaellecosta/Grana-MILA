@@ -3,7 +3,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_bloc.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/user_data_events.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 
 class TreasureButton extends StatelessWidget {
   TreasureButton({
@@ -87,11 +86,12 @@ class TreasureButton extends StatelessWidget {
                         SizedBox(
                           height: mediaQuery.size.height * 0.37,
                         ),
-                        Text(
+                        const Text(
                           'Alerta',
                           textAlign: TextAlign.center,
-                          style: AppTypography.font24Bold(),
-                          )
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w900),
+                        ),
                       ],
                     ),
                   ),
@@ -108,7 +108,8 @@ class TreasureButton extends StatelessWidget {
                           Text(
                             BrazilianPortuguese().lockedLevel,
                             textAlign: TextAlign.center,
-                            style: AppTypography.font20Bold(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -141,9 +142,11 @@ class TreasureButton extends StatelessWidget {
                                   ),
                                   Container(
                                     alignment: Alignment.center,
-                                    child: Text(
+                                    child: const Text(
                                       'OK',
-                                      style: AppTypography.font20Bold(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w900),
                                     ),
                                   ),
                                 ],

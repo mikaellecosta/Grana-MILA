@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:lasic_grana_flutter/app/core/blocs/base_states.dart';
 import 'package:lasic_grana_flutter/app/core/languages/brazilian_portuguese.dart';
-import 'package:lasic_grana_flutter/app/core/utils/typography.dart';
 import 'package:lasic_grana_flutter/app/core/widgets/pages_background.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_bloc.dart';
 import 'package:lasic_grana_flutter/app/modules/levels/blocs/level_events.dart';
@@ -58,7 +57,8 @@ class _NotifyMaxRewardPageState extends State<NotifyMaxRewardPage> {
                 return Text(
                   BrazilianPortuguese()
                       .notifyMaxRewarValue(levelBloc.level.questionsToComplete),
-                  style: AppTypography.font28Bold(),
+                  style: const TextStyle(
+                      fontSize: 28, fontWeight: FontWeight.w900),
                 );
               },
             ),
